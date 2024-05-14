@@ -23,7 +23,7 @@
 
 # Project Plans
 * [x] Setup basic window with Raylib
-* [ ] Introduce `nui.h` and `nf.h` as libraries
+* [x] Introduce `nui.h` and `nf.h` as libraries
 * [ ] Setup basic neural network
 * [ ] Read one image
     * Use argv to supply the path to the image
