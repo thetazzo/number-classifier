@@ -4,19 +4,25 @@
 
 ---
 
-* The model will is suppoesd to be trained on the *mnist* database of handwritten digits and the same database can also be used for testing the trained model
-* The application uses *Raylib* as its "frontend framework" - visual display of the neural network model, its trainging/testing, etc.
+## Short description
 
----
+* This application trains a neural network on **mnist** database of handwritten digits and produces a neural network model than can classify which digit appears on the given image
 
-* This project was heavily inspired by TSoding's machine learing series and the machine learing framework used in the project is a heavily inspired recreation of TSoding's neural network framework
-* All inspirations for the project can be found in the *References* sestion of the **README**
+--- 
 
+## Build And Usage
+* The project can be built using the provided *build.sh* script
+```bash
+$ ./bash.sh
+```
+* To run the program execute
+```bash
+$ ./classifier
+```
 ---
 
 ## Dependencies
-
-* This project uses Raylib (`raylib v5.1-dev`) for its rendering needs
+* This project uses Raylib (`raylib v5.1-dev`) for its visualisaion needs
     * Please refer to [Raylib build/installation instructions](https://github.com/raysan5/raylib?tab=readme-ov-file#build-and-installation) 
 
 ---
@@ -43,6 +49,8 @@
 * [ ] Test validation on all testing images and count the amout of correct validations
 
 ---
+
+* This project was heavily inspired by TSoding's machine learing series and the machine learing framework used in the project is a heavily inspired recreation of TSoding's neural network framework
 
 # References
 * 3b1b machine learning series: https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&si=4IbV97Q8pbC5Ildy
