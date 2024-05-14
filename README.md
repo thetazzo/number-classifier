@@ -13,6 +13,14 @@
 * All inspirations for the project can be found in the *References* sestion of the **README**
 
 ---
+
+## Dependencies
+
+* This project uses Raylib (`raylib v5.1-dev`) for its rendering needs
+    * Please refer to [Raylib build/installation instructions](https://github.com/raysan5/raylib?tab=readme-ov-file#build-and-installation) 
+
+---
+
 # Project Plans
 * [x] Setup basic window with Raylib
 * [ ] Introduce `nui.h` and `nf.h` as libraries
