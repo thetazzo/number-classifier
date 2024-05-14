@@ -16,7 +16,10 @@
 #define WIDTH  16*FACT
 #define HEIGHT  9*FACT
 
-size_t arch[] = {2, 2, 1};
+// =============================================================================
+// Neural network constants
+// =============================================================================
+size_t arch[] = {2, 2, 1}; // this specifies the architecture of the neural network
 
 int main(void)
 {
@@ -28,8 +31,14 @@ int main(void)
 
     while (!WindowShouldClose()) {
         // Application rendering starts here
+        size_t w = GetScreenWidth();
+        size_t h = GetScreenHeight();
+        NUI_Rect root = {0, 0, w, h};
         BeginDrawing();
-            ClearBackground(nui_background_color());
+        ClearBackground(nui_background_color());
+        nui_layout_begin(NLO_HORZ, root, 1, 0);
+        nui_render_nn(nn, nui_layout_slot());
+        nui_layout_end();
         EndDrawing();
     }
     
