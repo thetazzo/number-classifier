@@ -48,7 +48,7 @@
 #define NUI_BACKGROUND {0x00, 0xAA, 0x55, 0xFF}
 #endif
 
-Color background_color();
+Color nui_background_color();
 
 typedef struct {
     float x;
@@ -106,7 +106,7 @@ void nui_render_nn_activations_heatmap(NF_NN nn, NUI_Rect r);
 
 #ifdef NUI_IMPLEMENTATION
 
-Color background_color()
+Color nui_background_color()
 {
     return CLITERAL(Color)NUI_BACKGROUND;
 }
