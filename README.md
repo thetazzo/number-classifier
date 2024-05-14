@@ -39,7 +39,7 @@
 * [x] Setup basic window with Raylib
 * [x] Introduce `nui.h` and `nf.h` as libraries
 * [x] Introduce `mnist` database
-* [ ] Setup basic neural network
+* [x] Setup basic neural network
 * [ ] Read two images
     * Use argv to supply the path to the images
 * [ ] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
