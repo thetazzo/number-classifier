@@ -10,7 +10,15 @@
 
 --- 
 
+# MNIST database
+* For my own training and testing I used the **mnist database** obtained from **kaggle** - https://www.kaggle.com/datasets/jidhumohan/mnist-png
+* I downloaded the `archive` and placed its content into `assets/mnist-images`
+
+---
+
 ## Build And Usage
+
+
 * The project can be built using the provided *build.sh* script
 ```bash
 ./build.sh
@@ -56,3 +64,4 @@
 * 3b1b machine learning series: https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&si=4IbV97Q8pbC5Ildy
 * tsoding machine learning series: https://youtube.com/playlist?list=PLpM-Dvs8t0VZPZKggcql-MmjaBdZKeDMw&si=3kYCTFRk-8TX8tLN
 * mnist database: http://yann.lecun.com/exdb/mnist/
+* mnist images (kaggle): https://www.kaggle.com/datasets/jidhumohan/mnist-png
