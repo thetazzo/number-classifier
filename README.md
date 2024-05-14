@@ -42,7 +42,7 @@
 * [x] Setup basic neural network
 * [x] Read two images
     * Use argv to supply the path to the images
-* [ ] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
+* [x] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
 * [ ] Train the basic neural network on two images
 * [ ] Visualize the training of the neural netowrk using `nui.h`
 * [ ] Read the third image (testing image)
