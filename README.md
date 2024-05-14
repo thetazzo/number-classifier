@@ -13,11 +13,11 @@
 ## Build And Usage
 * The project can be built using the provided *build.sh* script
 ```bash
-$ ./bash.sh
+./bash.sh
 ```
 * To run the program execute
 ```bash
-$ ./classifier
+./classifier
 ```
 ---
 
