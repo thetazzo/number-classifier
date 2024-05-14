@@ -1,5 +1,10 @@
+#ifndef NF_H_
+#error "Neural Framework (NF) library is missing" 
+#endif
+
 #ifndef NUI_H_
 #define NUI_H_
+
 #include <math.h>
 #include <errno.h>
 // posix specific headers :: allows forking childs in linux
@@ -11,10 +16,16 @@
 #include "raylib.h"
 #include "raymath.h"
 
+// ================================================================= 
+// Macro specifying the inital dynamic array capacity
+// ================================================================= 
 #ifndef DA_INIT_CAP
 #define DA_INIT_CAP 256
 #endif // DA_INIT_CAP
 
+// ================================================================= 
+// Macro used for appending items(data) into a dynamic array
+// ================================================================= 
 #ifndef da_append
 #define da_append(da, item)                                                                 \
     do {                                                                                    \
@@ -27,9 +38,17 @@
     } while (0)                                                                           
 #endif // da_append
 
+// ================================================================= 
+// Macro defining the background color that used in the application
+//     - { R, G, B, A} 
+//     - hexadecimal values of each color component
+//     - the last component (A) is the brightness of the color
+// ================================================================= 
 #ifndef NUI_BACKGROUND
-#define NUI_BACKGROUND 0x00, 0xAA, 0x55, 0xFF
+#define NUI_BACKGROUND {0x00, 0xAA, 0x55, 0xFF}
 #endif
+
+Color background_color();
 
 typedef struct {
     float x;
@@ -86,6 +105,11 @@ void nui_render_nn_weights_heatmap(NF_NN nn, NUI_Rect r);
 void nui_render_nn_activations_heatmap(NF_NN nn, NUI_Rect r);
 
 #ifdef NUI_IMPLEMENTATION
+
+Color background_color()
+{
+    return CLITERAL(Color)NUI_BACKGROUND;
+}
 
 NUI_Rect nui_layout_slot_loc(NUI_Layout *l, const char *file_path, int line)
 {
@@ -325,5 +349,3 @@ void nui_render_nn_activations_heatmap(NF_NN nn, NUI_Rect r)
 
 #endif // NUI_IMPLEMENTATION
 #endif // NUI_H_
-
-
