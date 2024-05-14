@@ -1,6 +1,6 @@
 # Number Classifier
 
-* An machine learning model for classifying handwritten digits
+* A machine learning model for classifying handwritten digits
 
 ---
 
