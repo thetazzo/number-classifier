@@ -32,7 +32,14 @@ char *pop_argv(int *argc, char ***argv)
 // =============================================================================
 size_t arch[] = {2, 2, 1}; // this specifies the architecture of the neural network
 
-Image load_8bit_image(char *img_file_path)
+typedef struct {
+    int width;
+    int height;
+    int comp;
+    uint8_t *data;
+} RawImage;
+
+RawImage load_8bit_raw_image(char *img_file_path)
 {
     int img_width, img_height, img_comp;
     uint8_t *img_data = (uint8_t *)stbi_load(img_file_path, &img_width, &img_height, &img_comp, 0);
@@ -44,11 +51,21 @@ Image load_8bit_image(char *img_file_path)
         fprintf(stderr, "ERROR:  image %s is %d bits image, Only 8 bit grayscale images are supported", img_file_path, img_comp*8);
         exit(1);
     }
+    RawImage rimg = {
+        .width = img_width,
+        .height = img_height,
+        .comp = img_comp,
+        .data = img_data,
+    };
+    return rimg;
+}
 
-    Image img = GenImageColor(img_width, img_height, BLACK);
-    for (int y = 0; y < img_height; ++y) {
-        for (int x = 0; x < img_width; ++x) {
-            uint8_t pixel = img_data[y*img_width + x]; 
+Image raw_img_to_img(RawImage rimg) 
+{
+    Image img = GenImageColor(rimg.width, rimg.height, BLACK);
+    for (int y = 0; y < rimg.height; ++y) {
+        for (int x = 0; x < rimg.width; ++x) {
+            uint8_t pixel = rimg.data[y*rimg.width + x]; 
             ImageDrawPixel(
                 &img,
                 x,
@@ -86,16 +103,19 @@ int main(int argc, char **argv)
     NF_NN nn = nf_nn_alloc(NULL, arch, ARRAY_LEN(arch));
     nf_nn_rand(nn, -1, 1);
 
+    RawImage rimg1 = load_8bit_raw_image(img1_file_path);
+    RawImage rimg2 = load_8bit_raw_image(img2_file_path);
+
     InitWindow(WIDTH, HEIGHT, "Number Classifier");
 
     size_t img_width = 28;
 
     // preapre image 1
-    Image img1 = load_8bit_image(img1_file_path);
+    Image img1 = raw_img_to_img(rimg1);
     Texture2D img1_texture = LoadTextureFromImage(img1);
 
     // preapre image 2
-    Image img2 = load_8bit_image(img2_file_path);
+    Image img2 = raw_img_to_img(rimg2);
     Texture2D img2_texture = LoadTextureFromImage(img2);
 
     while (!WindowShouldClose()) {
