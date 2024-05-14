@@ -38,7 +38,7 @@
 # Project Plans
 * [x] Setup basic window with Raylib
 * [x] Introduce `nui.h` and `nf.h` as libraries
-* [ ] Introduce `mnist` database
+* [x] Introduce `mnist` database
 * [ ] Setup basic neural network
 * [ ] Read two images
     * Use argv to supply the path to the images
