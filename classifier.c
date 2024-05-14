@@ -8,6 +8,17 @@
 #include "./libs/nui.h"
 
 // =============================================================================
+// Pop and return the top argv
+// =============================================================================
+char *pop_argv(int *argc, char ***argv)
+{
+    char *result = **argv;
+    (*argc) -= 1;
+    (*argv) += 1;
+    return result;
+}
+
+// =============================================================================
 // Window sizing definition
 //    - Assuming a 16:9 aspect ratio
 //    - FACT is a number for sizing the aspect ratio window (bigger = bigger)
@@ -21,8 +32,16 @@
 // =============================================================================
 size_t arch[] = {2, 2, 1}; // this specifies the architecture of the neural network
 
-int main(void)
+int main(int argc, char **argv)
 {
+    char *program = pop_argv(&argc, &argv);
+
+    if (argc == 0) {
+        printf("[ERROR]: path to image was not provided\n");
+        printf("usage: %s <img_path>\n", program);
+        return 1;
+    }
+
     // neural network setup
     NF_NN nn = nf_nn_alloc(NULL, arch, ARRAY_LEN(arch));
     nf_nn_rand(nn, -1, 1);
