@@ -30,7 +30,7 @@ char *pop_argv(int *argc, char ***argv)
 // =============================================================================
 // Neural network constants
 // =============================================================================
-size_t arch[] = {2, 2, 1}; // this specifies the architecture of the neural network
+size_t arch[] = {28*28, 2, 3}; // this specifies the architecture of the neural network
 
 typedef struct {
     int width;
@@ -39,6 +39,9 @@ typedef struct {
     uint8_t *data;
 } RawImage;
 
+// =============================================================================
+// Reads the image file at provided path and turns it into a RawImage structure
+// =============================================================================
 RawImage load_8bit_raw_image(char *img_file_path)
 {
     int img_width, img_height, img_comp;
@@ -60,6 +63,9 @@ RawImage load_8bit_raw_image(char *img_file_path)
     return rimg;
 }
 
+// =============================================================================
+// Converts the RawImage structure into Raylib Image structure
+// =============================================================================
 Image raw_img_to_img(RawImage rimg) 
 {
     Image img = GenImageColor(rimg.width, rimg.height, BLACK);
@@ -75,6 +81,26 @@ Image raw_img_to_img(RawImage rimg)
         }
     }
     return img;
+}
+
+void add_image_training_data(NF_Mat td, RawImage rimg, size_t index)
+{
+    for (int y = 0; y < rimg.height; ++y) {
+        for (int x = 0; x < rimg.width; ++x) {
+            size_t i = y*rimg.width + x; 
+            if (index == 2) {
+                NF_MAT_AT(td, 0, i) = rimg.data[i]/255.f;
+                // Handle image where there is the number 9
+                NF_MAT_AT(td, index, i+1) = 0;
+                NF_MAT_AT(td, index, i+2) = 1;
+            } else if (index == 9) {
+                NF_MAT_AT(td, 1, i) = rimg.data[i]/255.f;
+                // Handle image where there is the number 2
+                NF_MAT_AT(td, index, i+1) = 1;
+                NF_MAT_AT(td, index, i+2) = 0;
+            }
+        }
+    }
 }
 
 int main(int argc, char **argv)
@@ -106,6 +132,12 @@ int main(int argc, char **argv)
     RawImage rimg1 = load_8bit_raw_image(img1_file_path);
     RawImage rimg2 = load_8bit_raw_image(img2_file_path);
 
+    // Allocate a traing data matrix which is 2x784
+    NF_Mat td = nf_mat_alloc(NULL, 2, NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols);
+
+    add_image_training_data(td, rimg1, 9);
+    add_image_training_data(td, rimg2, 2);
+
     InitWindow(WIDTH, HEIGHT, "Number Classifier");
 
     size_t img_width = 28;
@@ -118,7 +150,25 @@ int main(int argc, char **argv)
     Image img2 = raw_img_to_img(rimg2);
     Texture2D img2_texture = LoadTextureFromImage(img2);
 
+    float rate = 0.5f;
+
+    size_t epoch = 0;
+
+    Batch batch = {0};
+    size_t batch_size = 25;
+    Region temp = region_alloc_alloc(1024*2014*256);
+
+    float cost = 0.f;
+
     while (!WindowShouldClose()) {
+        nf_batch_process(&temp, &batch, batch_size, nn, td, rate);
+        if (batch.done) {
+            epoch += 1;
+            //da_append(&plot, batch.cost);
+            cost = batch.cost;
+            nf_mat_shuffle_rows(td);
+            printf("cost: %f\n", cost);
+        }
         // Application rendering starts here
         size_t w = GetScreenWidth();
         size_t h = GetScreenHeight();
@@ -133,8 +183,9 @@ int main(int argc, char **argv)
         nui_render_nn(nn, nui_layout_slot());
         nui_layout_end();
         EndDrawing();
+        region_reset(&temp);
     }
-    
+
     CloseWindow();
 
     return 0;
