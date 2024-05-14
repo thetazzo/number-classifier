@@ -30,7 +30,7 @@ char *pop_argv(int *argc, char ***argv)
 // =============================================================================
 // Neural network constants
 // =============================================================================
-size_t arch[] = {28*28, 2, 3}; // this specifies the architecture of the neural network
+size_t arch[] = {28*28, 16, 16, 10}; // this specifies the architecture of the neural network
 
 typedef struct {
     int width;
@@ -83,21 +83,129 @@ Image raw_img_to_img(RawImage rimg)
     return img;
 }
 
+// =============================================================================
+// Add image to the training matrix
+//     - td    .... {NF_Mat} matrix containing trainig data
+//     - rimg  .... {RawImage} image to be added
+//     - index .... {size_t} the image integer representation 
+// =============================================================================
 void add_image_training_data(NF_Mat td, RawImage rimg, size_t index)
 {
+    size_t ind = index - 1;
     for (int y = 0; y < rimg.height; ++y) {
         for (int x = 0; x < rimg.width; ++x) {
-            size_t i = y*rimg.width + x; 
-            if (index == 2) {
-                NF_MAT_AT(td, 0, i) = rimg.data[i]/255.f;
-                // Handle image where there is the number 9
-                NF_MAT_AT(td, index, i+1) = 0;
-                NF_MAT_AT(td, index, i+2) = 1;
-            } else if (index == 9) {
-                NF_MAT_AT(td, 1, i) = rimg.data[i]/255.f;
-                // Handle image where there is the number 2
-                NF_MAT_AT(td, index, i+1) = 1;
-                NF_MAT_AT(td, index, i+2) = 0;
+            size_t i = y*rimg.width + x;
+            NF_MAT_AT(td, ind, i) = rimg.data[i]/255.f;
+            if (ind == 0) {
+                NF_MAT_AT(td, ind, i+1)  = 1; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 1) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 1; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 2) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 1; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 3) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 1; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 4) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 1; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 5) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 1; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 6) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 1; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 7) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 1; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 8) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 1; // 8
+                NF_MAT_AT(td, ind, i+10) = 0; // 9
+            } else if (ind == 9) {
+                NF_MAT_AT(td, ind, i+1)  = 0; // 0
+                NF_MAT_AT(td, ind, i+2)  = 0; // 1
+                NF_MAT_AT(td, ind, i+3)  = 0; // 2
+                NF_MAT_AT(td, ind, i+4)  = 0; // 3
+                NF_MAT_AT(td, ind, i+5)  = 0; // 4
+                NF_MAT_AT(td, ind, i+6)  = 0; // 5
+                NF_MAT_AT(td, ind, i+7)  = 0; // 6
+                NF_MAT_AT(td, ind, i+8)  = 0; // 7
+                NF_MAT_AT(td, ind, i+9)  = 0; // 8
+                NF_MAT_AT(td, ind, i+10) = 1; // 9
             }
         }
     }
@@ -105,6 +213,7 @@ void add_image_training_data(NF_Mat td, RawImage rimg, size_t index)
 
 int main(int argc, char **argv)
 {
+    Region temp = region_alloc_alloc(1024*1014*256);
     char *program = pop_argv(&argc, &argv);
 
     if (argc == 0) {
@@ -132,8 +241,7 @@ int main(int argc, char **argv)
     RawImage rimg1 = load_8bit_raw_image(img1_file_path);
     RawImage rimg2 = load_8bit_raw_image(img2_file_path);
 
-    // Allocate a traing data matrix which is 2x784
-    NF_Mat td = nf_mat_alloc(NULL, 2, NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols);
+    NF_Mat td = nf_mat_alloc(NULL, 9, NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols);
 
     add_image_training_data(td, rimg1, 9);
     add_image_training_data(td, rimg2, 2);
@@ -150,13 +258,12 @@ int main(int argc, char **argv)
     Image img2 = raw_img_to_img(rimg2);
     Texture2D img2_texture = LoadTextureFromImage(img2);
 
-    float rate = 0.5f;
+    float rate = 0.05f;
 
     size_t epoch = 0;
 
     Batch batch = {0};
     size_t batch_size = 25;
-    Region temp = region_alloc_alloc(1024*2014*256);
 
     float cost = 0.f;
     NUI_Plot cost_plot = {0};
