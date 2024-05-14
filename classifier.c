@@ -159,15 +159,16 @@ int main(int argc, char **argv)
     Region temp = region_alloc_alloc(1024*2014*256);
 
     float cost = 0.f;
+    NUI_Plot cost_plot = {0};
 
     while (!WindowShouldClose()) {
+        // neural network training starts here
         nf_batch_process(&temp, &batch, batch_size, nn, td, rate);
         if (batch.done) {
             epoch += 1;
-            //da_append(&plot, batch.cost);
+            da_append(&cost_plot, batch.cost);
             cost = batch.cost;
             nf_mat_shuffle_rows(td);
-            printf("cost: %f\n", cost);
         }
         // Application rendering starts here
         size_t w = GetScreenWidth();
@@ -176,10 +177,11 @@ int main(int argc, char **argv)
         NUI_Rect root = {0, 0, w, h};
         BeginDrawing();
         ClearBackground(nui_background_color());
-        nui_layout_begin(NLO_HORZ, root, 2, 0);
+        nui_layout_begin(NLO_HORZ, root, 3, 0);
         NUI_Rect isr = nui_layout_slot();
         DrawTextureEx(img1_texture, CLITERAL(Vector2){isr.x+isr.w/16, isr.y+isr.h/3}, 0, scale, WHITE);
         DrawTextureEx(img2_texture, CLITERAL(Vector2){isr.x+isr.w/16+img_width*scale, isr.y+isr.h/3}, 0, scale, WHITE);
+        nui_plot(cost_plot, nui_layout_slot());
         nui_render_nn(nn, nui_layout_slot());
         nui_layout_end();
         EndDrawing();
