@@ -24,7 +24,9 @@
 #define NF_ASSERT assert
 #endif // NF_ASSERT
 
-#define NF_ARRAY_LEN(xs) sizeof((xs))/sizeof((xs)[0])
+#ifndef ARRAY_LEN
+#define ARRAY_LEN(xs) sizeof((xs))/sizeof((xs)[0])
+#endif // ARRAY_LEN
 
 float rand_float(void);
 
@@ -772,7 +774,7 @@ int nf_v_render_upscaled_video(NF_NN nn, float duration, const char *out_file_pa
         {1, 0},
     };
 
-    size_t segments_count = NF_ARRAY_LEN(segments);
+    size_t segments_count = ARRAY_LEN(segments);
     float segment_length = 1.f/segments_count;
 
     // render video
