@@ -14,7 +14,7 @@
 
 ---
 # Project Plans
-* [ ] Setup basic window with Raylib
+* [x] Setup basic window with Raylib
 * [ ] Introduce `nui.h` and `nf.h` as libraries
 * [ ] Setup basic neural network
 * [ ] Read one image
