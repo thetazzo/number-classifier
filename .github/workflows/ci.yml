@@ -1,0 +1,15 @@
+name: CI
+on: 
+  pull_request:
+  push:
+    branches: [ master ]
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: build classifier
+        run: |
+          ./build.sh
+
+
