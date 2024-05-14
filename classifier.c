@@ -1,4 +1,5 @@
 #include <assert.h>
+
 #define NF_IMPLEMENTATION
 #include "./libs/nf.h"
 
