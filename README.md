@@ -18,12 +18,15 @@
 * [ ] Setup basic window with Raylib
 * [ ] Setup basic neural network
 * [ ] Read one image
+    * Use argv to supply the path to the image
 * [ ] Read two images
+    * Use argv to supply the path to the images
 * [ ] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
 * [ ] Train the basic neural network on two images
-* [ ] Visualize the training of the neural netowrk
+* [ ] Visualize the training of the neural netowrk using `nui.h`
 * [ ] Read the third image (testing image)
-* [ ] Test the training image on the trained neural network
+    * Use argv to supply the path to the image
+* [ ] Test the neural model with the testing image
 * [ ] Render the result of the test in the app
 * [ ] Introduce `tia.h` for loading multiple images into one single data structure 
 * [ ] Introduce all images from `mnist` data set
