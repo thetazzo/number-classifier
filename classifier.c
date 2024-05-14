@@ -16,39 +16,20 @@
 #define WIDTH  16*FACT
 #define HEIGHT  9*FACT
 
-// =============================================================================
-// Commands to be executed on each update call
-//  - An update is executed just before a render call (on_app_render)
-//  - An application update is some logic/arithmetic that gets executed
-//  - In our case here is where the neural network training happens
-// =============================================================================
-void on_app_update()
-{
-    assert(0 && "Not Implemented");
-}
-
-// =============================================================================
-// Commands to be executed on each render call
-//  - A render call is executed after an update call (on_app_update)
-//  - An application render is something that produces some visual update(draw)
-//  - In our case here is where the neural network is visualized
-// =============================================================================
-void on_app_render()
-{
-    assert(0 && "Not Implemented");
-}
+size_t arch[] = {2, 2, 1};
 
 int main(void)
 {
+    // neural network setup
+    NF_NN nn = nf_nn_alloc(NULL, arch, ARRAY_LEN(arch));
+    nf_nn_rand(nn, -1, 1);
+
     InitWindow(WIDTH, HEIGHT, "Number Classifier");
 
     while (!WindowShouldClose()) {
-        on_app_update();
-
         // Application rendering starts here
         BeginDrawing();
-            ClearBackground(background_color());
-            on_app_render();
+            ClearBackground(nui_background_color());
         EndDrawing();
     }
     
