@@ -24,9 +24,8 @@
 # Project Plans
 * [x] Setup basic window with Raylib
 * [x] Introduce `nui.h` and `nf.h` as libraries
+* [ ] Introduce `mnist` database
 * [ ] Setup basic neural network
-* [ ] Read one image
-    * Use argv to supply the path to the image
 * [ ] Read two images
     * Use argv to supply the path to the images
 * [ ] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
@@ -37,7 +36,6 @@
 * [ ] Test the neural model with the testing image
 * [ ] Render the result of the test in the app
 * [ ] Introduce `tia.h` for loading multiple images into one single data structure 
-* [ ] Introduce all images from `mnist` data set
 * [ ] Use `tia.h` for loading all `mnist` training images
 * [ ] Use `tia.h` for loading all `mnist` testing images
 * [ ] Enable switching between random testing images for testing
