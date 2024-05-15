@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 
     NUI_Plot cost_plot = {0};
 
-    char iuf[256]; // info string buffer
+    char info_sb[256]; // display epoch, activation, rate, cost, etc.
     while (!WindowShouldClose()) {
         // neural network training starts here
         for (size_t k = 0; k < batches_per_frame && epoch < max_epoch; ++k) {
@@ -133,14 +133,15 @@ int main(int argc, char **argv)
         NUI_Rect isr = nui_layout_slot();
         // draw info about the neural network
         snprintf(
-            iuf,
-            sizeof(iuf),
-            "activation: %s,\n\n\n\ncost: %f,\n\n\n\ntraining on: %zu images",
+            info_sb,
+            sizeof(info_sb),
+            "activation: %s,\n\n\n\nrate: %f,\n\n\n\ncost: %f,\n\n\n\ntraining on %zu images",
             activation_as_str(),
+            rate,
             cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0,
             training_imgs.count
         );
-        DrawTextEx(font, iuf, CLITERAL(Vector2){100, 50}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
         nui_plot(cost_plot, nui_layout_slot());
         // draw neural network
