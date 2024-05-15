@@ -42,7 +42,7 @@ typedef struct {
 // =============================================================================
 // Reads the image file at provided path and turns it into a RawImage structure
 // =============================================================================
-RawImage load_8bit_raw_image(char *img_file_path)
+RawImage load_8bit_image_as_raw(char *img_file_path)
 {
     int img_width, img_height, img_comp;
     uint8_t *img_data = (uint8_t *)stbi_load(img_file_path, &img_width, &img_height, &img_comp, 0);
@@ -238,8 +238,8 @@ int main(int argc, char **argv)
     NF_NN nn = nf_nn_alloc(NULL, arch, ARRAY_LEN(arch));
     nf_nn_rand(nn, -1, 1);
 
-    RawImage rimg1 = load_8bit_raw_image(img1_file_path);
-    RawImage rimg2 = load_8bit_raw_image(img2_file_path);
+    RawImage rimg1 = load_8bit_image_as_raw(img1_file_path);
+    RawImage rimg2 = load_8bit_image_as_raw(img2_file_path);
 
     NF_Mat td = nf_mat_alloc(NULL, 9, NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols);
 
