@@ -40,11 +40,11 @@
 * [x] Introduce `nui.h` and `nf.h` as libraries
 * [x] Introduce `mnist` database
 * [x] Setup basic neural network
-* [ ] Read two images
+* [x] Read two images
     * Use argv to supply the path to the images
-* [ ] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
-* [ ] Train the basic neural network on two images
-* [ ] Visualize the training of the neural netowrk using `nui.h`
+* [x] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
+* [x] Train the basic neural network on two images
+* [x] Visualize the training of the neural netowrk using `nui.h`
 * [ ] Read the third image (testing image)
     * Use argv to supply the path to the image
 * [ ] Test the neural model with the testing image
@@ -61,7 +61,7 @@
 ## Acknowledgements
 
 * This project was heavily inspired by TSoding's machine learing series and the machine learing framework used in the project is a heavily inspired recreation of TSoding's neural network framework
-* This project also uses `nothings/stb`, more specifically `stb_image.h` and `stb_image_write.h`, for it's image file loading
+* This project also uses `nothings/stb`, more specifically `stb_image.h`, for it's image file loading
 
 ---
 

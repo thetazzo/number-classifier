@@ -15,6 +15,7 @@
 
 #include "raylib.h"
 #include "raymath.h"
+#include "stb_image.h"
 
 // ================================================================= 
 // Macro specifying the inital dynamic array capacity
