@@ -238,12 +238,16 @@ float nf_gelu(float x)
 
 char *nf_normf_as_str()
 {
+#ifdef NF_NN_NORMF
     switch (NF_NN_NORMF) {
         case NF_NORMF_SOFTMAX:
             return "SOFTMAX";
         default:
-            return "NONE";
+            NF_ASSERT(0 && "unreachable");
     }
+#else
+    return "NONE";
+#endif
 }
 
 void nf_softmax(NF_Mat m)
