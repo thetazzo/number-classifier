@@ -9,7 +9,7 @@
 * This application trains a neural network on **mnist** database of handwritten digits and produces a neural network model than can classify which digit appears on the given image
 
 <div style="text-align:center;">
-    <img src="./assets/gif/in-action.mp4" width="560" height="315" style=""></img>
+    <img src="./assets/gif/in-action.gif" width="560" height="315" style=""></img>
 </div>
 
 --- 
