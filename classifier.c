@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#define NF_NN_NORMF NF_NORMF_SOFTMAX
 #define NF_NN_ACT NF_ACT_LRELU
 #define NF_IMPLEMENTATION
 #include "./libs/nf.h"
@@ -8,7 +9,7 @@
 #define NUI_IMPLEMENTATION
 #include "./libs/nui.h"
 
-#define TIA_SKIP 2
+#define TIA_SKIP 6
 #define TIA_IMPLEMENTATION
 #include "./libs/tia.h"
 
@@ -187,38 +188,45 @@ int main(int argc, char **argv)
             info_sb,
             sizeof(info_sb),
             "activation: %s",
-            activation_as_str()
+            nf_activation_as_str()
         );
         DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 1*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        snprintf(
+            info_sb,
+            sizeof(info_sb),
+            "normalization: %s",
+            nf_normf_as_str()
+        );
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 2*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         snprintf(
             info_sb,
             sizeof(info_sb),
             "rate: %f",
             rate
         );
-        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 2*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 3*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         snprintf(
             info_sb,
             sizeof(info_sb),
             "cost: %f",
             cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0
         );
-        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 3*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 4*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         snprintf(
             info_sb,
             sizeof(info_sb),
             "training on %zu images",
             training_imgs.count
         );
-        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 4*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 5*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         snprintf(
             info_sb,
             sizeof(info_sb),
             "testing on %zu images",
             testing_imgs.count
         );
-        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 5*h*0.04f}, h*0.04f, 0.25f, WHITE); 
-        DrawTextEx(font, test_sb, CLITERAL(Vector2){100, 50 + 8*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 6*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, test_sb, CLITERAL(Vector2){100, 50 + 9*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
         nui_plot(cost_plot, nui_layout_slot());
         // draw neural network
