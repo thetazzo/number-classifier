@@ -30,7 +30,7 @@ char *pop_argv(int *argc, char ***argv)
 // =============================================================================
 // Neural network constants
 // =============================================================================
-size_t arch[] = {28*28, 16, 16, 10}; // this specifies the architecture of the neural network
+size_t arch[] = {28*28, 16, 16, 2}; // this specifies the architecture of the neural network
 
 typedef struct {
     int width;
@@ -83,7 +83,7 @@ Image raw_img_to_img(RawImage rimg)
     return img;
 }
 
-// =============================================================================
+// =======================================td.rows====================================
 // Add image to the training matrix
 //     - td    .... {NF_Mat} matrix containing trainig data
 //     - rimg  .... {RawImage} image to be added
@@ -91,121 +91,17 @@ Image raw_img_to_img(RawImage rimg)
 // =============================================================================
 void add_image_training_data(NF_Mat td, RawImage rimg, size_t index)
 {
-    size_t ind = index - 1;
+    size_t ind = index
     for (int y = 0; y < rimg.height; ++y) {
         for (int x = 0; x < rimg.width; ++x) {
             size_t i = y*rimg.width + x;
             NF_MAT_AT(td, ind, i) = rimg.data[i]/255.f;
-            if (ind == 0) {
-                NF_MAT_AT(td, ind, i+1)  = 1; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 1) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 1; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 2) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 1; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 3) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 1; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 4) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 1; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 5) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 1; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 6) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 1; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 7) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 1; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 8) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 1; // 8
-                NF_MAT_AT(td, ind, i+10) = 0; // 9
-            } else if (ind == 9) {
-                NF_MAT_AT(td, ind, i+1)  = 0; // 0
-                NF_MAT_AT(td, ind, i+2)  = 0; // 1
-                NF_MAT_AT(td, ind, i+3)  = 0; // 2
-                NF_MAT_AT(td, ind, i+4)  = 0; // 3
-                NF_MAT_AT(td, ind, i+5)  = 0; // 4
-                NF_MAT_AT(td, ind, i+6)  = 0; // 5
-                NF_MAT_AT(td, ind, i+7)  = 0; // 6
-                NF_MAT_AT(td, ind, i+8)  = 0; // 7
-                NF_MAT_AT(td, ind, i+9)  = 0; // 8
-                NF_MAT_AT(td, ind, i+10) = 1; // 9
+            for (size_t k = 1; k <= 2; ++k) {
+                if ((k-1) == ind) {
+                    NF_MAT_AT(td, ind, i+k) = 1;
+                } else {
+                    NF_MAT_AT(td, ind, i+k) = 0;
+                }
             }
         }
     }
@@ -243,8 +139,8 @@ int main(int argc, char **argv)
 
     NF_Mat td = nf_mat_alloc(NULL, 9, NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols);
 
-    add_image_training_data(td, rimg1, 9);
-    add_image_training_data(td, rimg2, 2);
+    add_image_training_data(td, rimg1, 0);
+    add_image_training_data(td, rimg2, 1);
 
     InitWindow(WIDTH, HEIGHT, "Number Classifier");
 
