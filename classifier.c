@@ -34,7 +34,7 @@ char *pop_argv(int *argc, char ***argv)
 // Neural network constants
 // =============================================================================
 size_t arch[] = {28*28, 16, 16, 9, 9, 10}; // this specifies the architecture of the neural network
-float rate = 0.02f; // neural network learning rate
+float rate = 0.2f; // neural network learning rate
 
 int main(int argc, char **argv)
 {
@@ -202,6 +202,13 @@ int main(int argc, char **argv)
             training_imgs.count
         );
         DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 4*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        snprintf(
+            info_sb,
+            sizeof(info_sb),
+            "testing on %zu images",
+            testing_imgs.count
+        );
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 5*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
         nui_plot(cost_plot, nui_layout_slot());
         // draw neural network
