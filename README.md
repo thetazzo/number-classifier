@@ -8,6 +8,10 @@
 
 * This application trains a neural network on **mnist** database of handwritten digits and produces a neural network model than can classify which digit appears on the given image
 
+<div style="text-align:center;">
+<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGFoYTg4MDhrNTA3YmMwbGkzMjBuaWxzcDVmeWxzajVxZmhrYnhqbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/7kC5GgHllI6QtFPZu1/giphy.gif" width="560" height="315" style=""></img>
+</div>
+
 --- 
 
 # MNIST database
