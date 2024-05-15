@@ -113,8 +113,16 @@ int main(int argc, char **argv)
     char test_sb[256]; // display test results
     snprintf(test_sb, sizeof(test_sb), "");
     while (!WindowShouldClose()) {
+        // toggle training
         if (IsKeyPressed(KEY_SPACE)) {
             isRunning = !isRunning;
+        }
+        // reinitialize the neural network model ~ restart
+        if (IsKeyPressed(KEY_R)) {
+            epoch = 0;
+            NUI_Plot tmp = {0};
+            cost_plot = tmp;
+            nf_nn_rand(nn, -1, 1);
         }
         // neural network training starts here
         for (size_t k = 0; k < batches_per_frame && epoch < max_epoch && isRunning; ++k) {
