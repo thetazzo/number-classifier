@@ -135,7 +135,7 @@ int main(int argc, char **argv)
         snprintf(
             iuf,
             sizeof(iuf),
-            "activation: %s,\n\n\n\ncost: %f,\n\n\n\ntraining on: %d images",
+            "activation: %s,\n\n\n\ncost: %f,\n\n\n\ntraining on: %zu images",
             activation_as_str(),
             cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0,
             training_imgs.count
