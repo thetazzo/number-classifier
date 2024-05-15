@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define NF_BACKPROP_TRADITIONAL
-// TODO: reafacor this to be part of the NF_NN typedef
+
 #ifndef NF_NN_ACT
 #define NF_NN_ACT NF_ACT_TANH
 #endif //NF_NN_ACT
@@ -41,7 +41,10 @@ typedef enum {
     NF_ACT_SIN,
 } NF_Act;
 
+// Activation name represented as a string
 char *nf_activation_as_str();
+// Normalization function name represented as a string
+char *nf_normf_as_str();
 
 float nf_sigmoidf(float x);
 float nf_reluf(float x);
@@ -92,6 +95,29 @@ void nf_mat_print(NF_Mat m, const char *name, size_t padding);
 
 // Handling the activation of the matrix
 void nf_mat_act(NF_Mat m);
+
+// ====================================================================
+// Neural Network Normalization Function ~ NF_NN_NORMF
+//     - this macro defines which function should be used for normalizing
+//       the output of the neural model
+//     - In most cases this function convert the output to a probability
+//       destribution
+//     - Normalization is applied on the output matrix if and only if the 
+//       NF_NN_NORMF macro is defined
+//     - The macro can be defined as one of the following:
+//           - NF_NORMF_SOFTMAX
+// ====================================================================
+typedef enum {
+    NF_NORMF_SOFTMAX,
+    // TODO: NF_NORMF_ARGMAX
+    // TODO: NF_NORMF_ARGMIN
+} NF_Normf;
+
+// ====================================================================
+// Normalize the output column of the matrix using SOFTMAX function
+//     - transforms the output of the matrix into a probability destribution
+// ====================================================================
+void nf_softmax(NF_Mat m);
 
 // ====================================================================
 //                     Neural Network Declarations 
@@ -150,9 +176,9 @@ float rand_float(void)
     return (float)rand()/(float)RAND_MAX;
 }
 
-// ------------------------------------------
+// ==========================================
 //            Activation Functions
-// ------------------------------------------
+// ==========================================
 
 char *nf_activation_as_str()
 {
@@ -204,6 +230,36 @@ float nf_gelu(float x)
 {
     (void)x;
     NF_ASSERT(0 && "TODO: implement!");
+}
+
+// ==========================================
+//            Normalization Functions
+// ==========================================
+
+char *nf_normf_as_str()
+{
+    switch (NF_NN_NORMF) {
+        case NF_NORMF_SOFTMAX:
+            return "SOFTMAX";
+        default:
+            return "NONE";
+    }
+}
+
+void nf_softmax(NF_Mat m)
+{
+    float exps = 0.f; // sum of the output column
+    // Calculate the sum of the output column
+    for (size_t i = 0; i < m.cols; ++i) {
+        float yi = NF_MAT_AT(m, 0, i);
+        exps += expf(yi);
+    }
+
+    // apply softmax
+    for (size_t i = 0; i < m.cols; ++i) {
+        float ex = expf(NF_MAT_AT(m, 0, i));
+        NF_MAT_AT(m, 0, i) = ex / exps;
+    }
 }
 
 /**
@@ -452,9 +508,17 @@ void nf_nn_forward(NF_NN nn)
         nf_mat_dot(nn.as[i+1], nn.as[i], nn.ws[i]);
         nf_mat_sum(nn.as[i+1], nn.bs[i]);
         nf_mat_act(nn.as[i+1]);
-        //nf_mat_lrelu(nn.as[i+1]);
-        //nf_mat_relu(nn.as[i+1]);
     }
+
+#ifdef NF_NN_NORMF
+        switch (NF_NN_NORMF) {
+            case NF_NORMF_SOFTMAX:
+                nf_softmax(nn.as[nn.arch_count-1]);
+                break;
+            default:
+                NF_ASSERT(0 && "unreachable");
+        }
+#endif
 }
 
 float nf_nn_cost(NF_NN nn, NF_Mat ti, NF_Mat to)
@@ -662,9 +726,7 @@ void nf_batch_process(Region *r, Batch *b, size_t batch_size, NF_NN nn, NF_Mat t
 }
 
 #ifdef NF_IMAGE_GENERATION
-// TODO: remove
-#define STR2(x) #x
-#define STR(x) STR2(x)
+#define STR(x) #x
  
 #define out_width 256
 #define out_height 256
