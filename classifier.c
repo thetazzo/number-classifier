@@ -33,39 +33,8 @@ char *pop_argv(int *argc, char ***argv)
 // =============================================================================
 // Neural network constants
 // =============================================================================
-size_t arch[] = {28*28, 16, 16, 9, 9, 2}; // this specifies the architecture of the neural network
+size_t arch[] = {28*28, 16, 16, 9, 9, 10}; // this specifies the architecture of the neural network
 float rate = 0.5f; // neural network learning rate
-
-typedef struct {
-    int width;
-    int height;
-    int comp;
-    uint8_t *data;
-} RawImage;
-
-// =======================================td.rows====================================
-// Add image to the training matrix
-//     - td    .... {NF_Mat} matrix containing trainig data
-//     - rimg  .... {RawImage} image to be added
-//     - index .... {size_t} the image integer representation 
-// =============================================================================
-void add_tia_training_data(NF_Mat td, RawImage rimg, size_t index)
-{
-    size_t ind = index;
-    for (int y = 0; y < rimg.height; ++y) {
-        for (int x = 0; x < rimg.width; ++x) {
-            size_t i = y*rimg.width + x;
-            NF_MAT_AT(td, ind, i) = rimg.data[i]/255.f;
-            for (size_t k = 1; k <= 2; ++k) {
-                if (k == (ind+1)) {
-                    NF_MAT_AT(td, ind, i+k) = 1;
-                } else {
-                    NF_MAT_AT(td, ind, i+k) = 0;
-                }
-            }
-        }
-    }
-}
 
 int main(int argc, char **argv)
 {
@@ -90,12 +59,6 @@ int main(int argc, char **argv)
     // Read testing dir path
     char *testing_dir_path = pop_argv(&argc, &argv);
 
-    if (argc == 0) {
-        printf("[ERROR]: path to testing image was not provided\n");
-        printf("usage: %s <img1_path> <img2_path> <test_img_path>\n", program);
-        return 1;
-    }
-
     // neural network setup
     NF_NN nn = nf_nn_alloc(NULL, arch, ARRAY_LEN(arch));
     nf_nn_rand(nn, -1, 1);
@@ -106,40 +69,49 @@ int main(int argc, char **argv)
     TIA testing_imgs = {0};
     tia_fill_tia_from_dir(&testing_imgs, testing_dir_path);
 
-//    RawImage rimg3 = load_8bit_image_as_raw(test_img_file_path);
+    NF_Mat td = nf_mat_alloc(
+        NULL,
+        training_imgs.count,
+        NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols
+    );
 
-    NF_Mat td = nf_mat_alloc(NULL, 2, NF_NN_INPUT(nn).cols + NF_NN_OUTPUT(nn).cols);
+    // Add training images to training data matrix
+    for (size_t z = 0; z < training_imgs.count; ++z) {
+        TrainImage ti = training_imgs.items[z];
+        for (int y = 0; y < ti.height; y++) {
+            for (int x = 0; x < ti.width; x++) {
+                int i = y*ti.width + x;
+                NF_MAT_AT(td, z, i) = ti.data[i]/255.f;
+                for (int k = 1; k <= 10; ++k) {
+                    if ((k-1) == ti.type) {
+                        NF_MAT_AT(td, z, i+k) = 1;
+                    } else {
+                        NF_MAT_AT(td, z, i+k) = 0;
+                    }
+                }
+            }
+        }
+    }
 
-//    add_image_training_data(td, rimg1, 0);
-//    add_image_training_data(td, rimg2, 1);
-
+    // raylib window setup
     InitWindow(WIDTH, HEIGHT, "Number Classifier");
     Font font = LoadFont("./assets/fonts/iosevka-term-ss02-regular.ttf");
 
     size_t img_width = 28;
 
-    // preapre image 3
-//    Image img3 = raw_img_to_img(rimg3);
-//    Texture2D img3_texture = LoadTextureFromImage(img3);
-
     size_t epoch = 0;
-
     Batch batch = {0};
     size_t batch_size = 25;
 
-    float cost = 0.f;
     NUI_Plot cost_plot = {0};
 
-    char ruf[2][256]; // result string buffer
-    snprintf(ruf[0], sizeof(ruf[0]), "");
-    snprintf(ruf[1], sizeof(ruf[1]), "");
+    char iuf[256]; // info string buffer
     while (!WindowShouldClose()) {
         // neural network training starts here
         nf_batch_process(&temp, &batch, batch_size, nn, td, rate);
         if (batch.done) {
             epoch += 1;
             da_append(&cost_plot, batch.cost);
-            cost = batch.cost;
             nf_mat_shuffle_rows(td);
         }
         // testing occurs when `T` is pressed
@@ -155,12 +127,15 @@ int main(int argc, char **argv)
         ClearBackground(nui_background_color());
         nui_layout_begin(NLO_HORZ, root, 3, 0);
         NUI_Rect isr = nui_layout_slot();
-        // draw test results
-        Vector2 txt1_pos = CLITERAL(Vector2){isr.x + isr.w/3, isr.y+isr.h-20*scale};
-        Vector2 txt2_pos = CLITERAL(Vector2){isr.x + isr.w/3, isr.y+isr.h-15*scale};
-        DrawTextEx(font, ruf[0], txt1_pos, h*0.04f, 0.25f, WHITE); 
-        DrawTextEx(font, ruf[1], txt2_pos, h*0.04f, 0.25f, WHITE); 
- //       DrawTextureEx(img3_texture, CLITERAL(Vector2){isr.x+isr.w/16+img_width*scale/2, isr.y+isr.h/4+img_width*scale}, 0, scale, WHITE);
+        // draw info about the neural network
+        snprintf(
+            iuf,
+            sizeof(iuf),
+            "activation: %s,\n\n\n\ncost: %f",
+            activation_as_str(),
+            cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0
+        );
+        DrawTextEx(font, iuf, CLITERAL(Vector2){100, 50}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
         nui_plot(cost_plot, nui_layout_slot());
         // draw neural network
