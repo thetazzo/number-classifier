@@ -510,6 +510,7 @@ void nf_nn_forward(NF_NN nn)
         nf_mat_act(nn.as[i+1]);
     }
 
+    // apply normalization functions only on the last layer (output) of the model
 #ifdef NF_NN_NORMF
         switch (NF_NN_NORMF) {
             case NF_NORMF_SOFTMAX:
@@ -589,9 +590,10 @@ NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
         //  forward the current sample(i-th row of ti) into the neual network
         // ================================================================================================
         nf_mat_copy(NF_NN_INPUT(nn), nf_mat_row(ti, i));
+        // TODO: maybe the normalization should not be applied at the end of nf_nn_forward but somewhere else?
         nf_nn_forward(nn);
 
-        // cclean up activations of the gradient network
+        // clean up activations of the gradient network
         for (size_t l = 0; l < nn.arch_count; ++l) {
             nf_mat_fill(gn.as[l], 0);
         }
