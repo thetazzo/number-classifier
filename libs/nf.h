@@ -41,7 +41,7 @@ typedef enum {
     NF_ACT_SIN,
 } NF_Act;
 
-char *activation_as_str();
+char *nf_activation_as_str();
 
 float nf_sigmoidf(float x);
 float nf_reluf(float x);
@@ -154,7 +154,7 @@ float rand_float(void)
 //            Activation Functions
 // ------------------------------------------
 
-char *activation_as_str()
+char *nf_activation_as_str()
 {
     switch (NF_NN_ACT) {
         case NF_ACT_SIG:
