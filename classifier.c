@@ -34,7 +34,7 @@ char *pop_argv(int *argc, char ***argv)
 // Neural network constants
 // =============================================================================
 size_t arch[] = {28*28, 16, 16, 9, 9, 10}; // this specifies the architecture of the neural network
-float rate = 0.5f; // neural network learning rate
+float rate = 0.02f; // neural network learning rate
 
 int main(int argc, char **argv)
 {
@@ -107,10 +107,15 @@ int main(int argc, char **argv)
 
     NUI_Plot cost_plot = {0};
 
+    bool isRunning = false;
+
     char info_sb[256]; // display epoch, activation, rate, cost, etc.
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            isRunning = !isRunning;
+        }
         // neural network training starts here
-        for (size_t k = 0; k < batches_per_frame && epoch < max_epoch; ++k) {
+        for (size_t k = 0; k < batches_per_frame && epoch < max_epoch && isRunning; ++k) {
             nf_batch_process(&temp, &batch, batch_size, nn, td, rate);
             if (batch.done) {
                 epoch += 1;
@@ -120,7 +125,33 @@ int main(int argc, char **argv)
         }
         // testing occurs when `T` is pressed
         if (IsKeyPressed(KEY_T)) {
-            assert(0 && "testing not implemented");
+            size_t vc = 0;
+            size_t nvc = 0;
+            for (size_t z = 0; z < testing_imgs.count; ++z) {
+                TrainImage ti = testing_imgs.items[z];
+                for (int y = 0; y < ti.height; y++) {
+                    for (int x = 0; x < ti.width; x++) {
+                        int i = y*ti.width + x;
+                        NF_MAT_AT(NF_NN_INPUT(nn), 0, i) = ti.data[i]/255.f;
+                    }
+                }
+                nf_nn_forward(nn);
+                float expected_ = NF_MAT_AT(NF_NN_OUTPUT(nn), 0, ti.type);
+                bool valid = true;
+                for (int q = 0; q < 10; ++q) {
+                    float o = NF_MAT_AT(NF_NN_OUTPUT(nn), 0, q);
+                    if (q != ti.type && o >= expected_) {
+                        valid = false;
+                    }
+                }
+                if (valid) {
+                    vc += 1;
+                } else {
+                    nvc += 1;
+                }
+            }
+            printf("No. valid is %zu\n", vc);
+            printf("No. invalid is %zu\n", nvc);
         }
         // Application rendering starts here
         size_t w = GetScreenWidth();
@@ -135,13 +166,42 @@ int main(int argc, char **argv)
         snprintf(
             info_sb,
             sizeof(info_sb),
-            "activation: %s,\n\n\n\nrate: %f,\n\n\n\ncost: %f,\n\n\n\ntraining on %zu images",
+            "%s",
+            isRunning ? "running" : "paused",
             activation_as_str(),
             rate,
             cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0,
             training_imgs.count
         );
-        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 0*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        snprintf(
+            info_sb,
+            sizeof(info_sb),
+            "activation: %s",
+            activation_as_str()
+        );
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 1*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        snprintf(
+            info_sb,
+            sizeof(info_sb),
+            "rate: %f",
+            rate
+        );
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 2*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        snprintf(
+            info_sb,
+            sizeof(info_sb),
+            "cost: %f",
+            cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0
+        );
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 3*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        snprintf(
+            info_sb,
+            sizeof(info_sb),
+            "training on %zu images",
+            training_imgs.count
+        );
+        DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 4*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
         nui_plot(cost_plot, nui_layout_slot());
         // draw neural network
