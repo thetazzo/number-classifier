@@ -18,7 +18,6 @@
 
 ## Build And Usage
 
-
 * The project can be built using the provided *build.sh* script
 ```bash
 ./build.sh
@@ -45,10 +44,10 @@
 * [x] Render two images with `nui.h` ~ ui library for neural network visualisaion based on raylib 
 * [x] Train the basic neural network on two images
 * [x] Visualize the training of the neural netowrk using `nui.h`
-* [ ] Read the third image (testing image)
+* [x] Read the third image (testing image)
     * Use argv to supply the path to the image
-* [ ] Test the neural model with the testing image
-* [ ] Render the result of the test in the app
+* [x] Test the neural model with the testing image
+* [x] Render the result of the test in the app
 * [ ] Introduce `tia.h` for loading multiple images into one single data structure 
 * [ ] Use `tia.h` for loading all `mnist` training images
 * [ ] Use `tia.h` for loading all `mnist` testing images
