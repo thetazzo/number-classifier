@@ -1,5 +1,11 @@
 #include <assert.h>
-#include "raylib.h"
+
+#define NF_IMPLEMENTATION
+#include "./libs/nf.h"
+
+#define NUI_BACKGROUND {0x12, 0x12, 0x12, 0xFF}
+#define NUI_IMPLEMENTATION
+#include "./libs/nui.h"
 
 // =============================================================================
 // Window sizing definition
@@ -41,6 +47,7 @@ int main(void)
 
         // Application rendering starts here
         BeginDrawing();
+            ClearBackground(background_color());
             on_app_render();
         EndDrawing();
     }
