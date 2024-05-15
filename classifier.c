@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#define NF_NN_ACT NF_ACT_LRELU
 #define NF_IMPLEMENTATION
 #include "./libs/nf.h"
 
@@ -7,7 +8,7 @@
 #define NUI_IMPLEMENTATION
 #include "./libs/nui.h"
 
-#define TIA_SKIP 6
+#define TIA_SKIP 2
 #define TIA_IMPLEMENTATION
 #include "./libs/tia.h"
 
@@ -34,8 +35,8 @@ char *pop_argv(int *argc, char ***argv)
 // =============================================================================
 // Neural network constants
 // =============================================================================
-size_t arch[] = {28*28, 16, 16, 9, 9, 7, 10}; // this specifies the architecture of the neural network
-float rate = 0.5f; // neural network learning rate
+size_t arch[] = {28*28, 16, 16, 9, 7, 10}; // this specifies the architecture of the neural network
+float rate = 0.02f; // neural network learning rate
 
 int main(int argc, char **argv)
 {
