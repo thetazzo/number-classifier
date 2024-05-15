@@ -100,19 +100,23 @@ int main(int argc, char **argv)
     size_t img_width = 28;
 
     size_t epoch = 0;
+    size_t max_epoch = 200;
     Batch batch = {0};
     size_t batch_size = 25;
+    size_t batches_per_frame = 20;
 
     NUI_Plot cost_plot = {0};
 
     char iuf[256]; // info string buffer
     while (!WindowShouldClose()) {
         // neural network training starts here
-        nf_batch_process(&temp, &batch, batch_size, nn, td, rate);
-        if (batch.done) {
-            epoch += 1;
-            da_append(&cost_plot, batch.cost);
-            nf_mat_shuffle_rows(td);
+        for (size_t k = 0; k < batches_per_frame && epoch < max_epoch; ++k) {
+            nf_batch_process(&temp, &batch, batch_size, nn, td, rate);
+            if (batch.done) {
+                epoch += 1;
+                da_append(&cost_plot, batch.cost);
+                nf_mat_shuffle_rows(td);
+            }
         }
         // testing occurs when `T` is pressed
         if (IsKeyPressed(KEY_T)) {
@@ -131,9 +135,10 @@ int main(int argc, char **argv)
         snprintf(
             iuf,
             sizeof(iuf),
-            "activation: %s,\n\n\n\ncost: %f",
+            "activation: %s,\n\n\n\ncost: %f,\n\n\n\ntraining on: %d images",
             activation_as_str(),
-            cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0
+            cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0,
+            training_imgs.count
         );
         DrawTextEx(font, iuf, CLITERAL(Vector2){100, 50}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
