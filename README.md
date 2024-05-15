@@ -58,10 +58,16 @@
 
 ---
 
+## Acknowledgements
+
 * This project was heavily inspired by TSoding's machine learing series and the machine learing framework used in the project is a heavily inspired recreation of TSoding's neural network framework
+* This project also uses `nothings/stb`, more specifically `stb_image.h` and `stb_image_write.h`, for it's image file loading
+
+---
 
 # References
 * 3b1b machine learning series: https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&si=4IbV97Q8pbC5Ildy
 * tsoding machine learning series: https://youtube.com/playlist?list=PLpM-Dvs8t0VZPZKggcql-MmjaBdZKeDMw&si=3kYCTFRk-8TX8tLN
 * mnist database: http://yann.lecun.com/exdb/mnist/
 * mnist images (kaggle): https://www.kaggle.com/datasets/jidhumohan/mnist-png
+* nothings's stb: https://github.com/nothings/stb

@@ -48,18 +48,21 @@
 #define NUI_BACKGROUND {0x00, 0xAA, 0x55, 0xFF}
 #endif
 
-Color background_color();
+// ================================================================= 
+// Raylib Color interpreation of the NUI_BACKGROUND 
+// ================================================================= 
+Color nui_background_color();
 
 typedef struct {
-    float x;
-    float y;
-    float w;
-    float h;
+    float x; // position on the x axis
+    float y; // position on the y axis
+    float w; // width
+    float h; // height
 } NUI_Rect;
 
 typedef enum {
-    NLO_HORZ,
-    NLO_VERT,
+    NLO_HORZ, // horizontal orientation
+    NLO_VERT, // vertical orientation
 } NUI_Layout_Orient;
 
 typedef struct {
@@ -84,8 +87,21 @@ void nui_layout_stack_push(NUI_Layout_Stack *ls, NUI_Layout_Orient orient, NUI_R
 
 static NUI_Layout_Stack default_nui_layout_stack = {0};
 
+// ================================================================= 
+// Macro used for marking the start of a new render layout
+//     - orient .... {NUI_Layout_Orient} orientation of the layout 
+//     - rect   .... {NUI_RECT} the rectangle on which the layout is applied 
+//     - count  .... {size_t} amount of slots inside the layout 
+//     - gap    .... {float} amount of space between layout slots
+// ================================================================= 
 #define nui_layout_begin(orient, rect, count, gap) nui_layout_stack_push(&default_nui_layout_stack, (orient), (rect), (count), (gap))
+// ================================================================= 
+// Macro used for marking the end of a render layout
+// ================================================================= 
 #define nui_layout_end() nui_layout_stack_pop(&default_nui_layout_stack)
+// ================================================================= 
+// Macro used for retrieving the next available slot whitin the current layout 
+// ================================================================= 
 #define nui_layout_slot() nui_layout_stack_slot(&default_nui_layout_stack)
 
 typedef struct {
@@ -94,8 +110,11 @@ typedef struct {
     size_t capacity;
 } NUI_Plot;
 
-void nui_widget(NUI_Rect r);
-
+// ================================================================= 
+// Creates a visualisation of the provided neural network
+//     - nn .... {NF_NN} the neural network to be visualized
+//     - r  .... {NUI_Rect} the rectangle where the visualisation is rendered
+// ================================================================= 
 void nui_render_nn(NF_NN nn, NUI_Rect r);
 void nui_plot(NUI_Plot plot, NUI_Rect);
 void nui_slider(float *value, bool *is_dragging, float rx, float ry, float rw, float rh);
@@ -106,7 +125,7 @@ void nui_render_nn_activations_heatmap(NF_NN nn, NUI_Rect r);
 
 #ifdef NUI_IMPLEMENTATION
 
-Color background_color()
+Color nui_background_color()
 {
     return CLITERAL(Color)NUI_BACKGROUND;
 }
