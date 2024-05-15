@@ -195,8 +195,9 @@ float nf_lreluf(float x)
 
 float nf_tanhf(float x)
 {
-    return (expf(x) - expf((-1)*x)) / (expf(x) + expf((-1)*x));
-//    return (expf(2*x) - 1)/(expf(2*x) + 1);
+    float ex = expf(x);
+    float enx = expf(-x);
+    return (ex - enx) / (ex + enx);
 }
 
 float nf_gelu(float x)
@@ -514,15 +515,15 @@ NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
     NF_ASSERT(NF_NN_OUTPUT(nn).cols == to.cols);
 
     NF_NN gn = nf_nn_alloc(r, nn.arch, nn.arch_count);
-    nf_nn_fill(gn, 0);                                                          // clear the gradient network
+    nf_nn_fill(gn, 0); // clear the gradient network
     
     // Feed-Forward With Back-Propagation
     // sample - i
     for (size_t i = 0; i < n; ++i) {
-        // --------------------------------------------------------------------------------------------------------------------------------------
+        // ================================================================================================
         //  Feed-Forward
         //  forward the current sample(i-th row of ti) into the neual network
-        // --------------------------------------------------------------------------------------------------------------------------------------
+        // ================================================================================================
         nf_mat_copy(NF_NN_INPUT(nn), nf_mat_row(ti, i));
         nf_nn_forward(nn);
 
@@ -531,12 +532,13 @@ NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
             nf_mat_fill(gn.as[l], 0);
         }
         
-        // Compute the differances of the next layer and store it as the output activaion (last layer activation) of the gradient neural network
+        // Compute the differances of the next layer and store it as the output activaion
+        // (last layer activation) of the gradient neural network
         for (size_t j = 0; j < to.cols; ++j) {
         #ifdef NF_BACKPROP_TRADITIONAL
-            NF_MAT_AT(NF_NN_OUTPUT(gn), 0, j) = 2*(NF_MAT_AT(NF_NN_OUTPUT(nn), 0, j) - NF_MAT_AT(to, i, j)); 
+            NF_MAT_AT(NF_NN_OUTPUT(gn), 0, j) = 2.f/n*(NF_MAT_AT(NF_NN_OUTPUT(nn), 0, j) - NF_MAT_AT(to, i, j)); 
         #else 
-            NF_MAT_AT(NF_NN_OUTPUT(gn), 0, j) = NF_MAT_AT(NF_NN_OUTPUT(nn), 0, j) - NF_MAT_AT(to, i, j); 
+            NF_MAT_AT(NF_NN_OUTPUT(gn), 0, j) = 1.f/n*NF_MAT_AT(NF_NN_OUTPUT(nn), 0, j) - NF_MAT_AT(to, i, j); 
         #endif //NF_BACKPROP_TRADITIONAL
         }
 
@@ -546,15 +548,16 @@ NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
                 float s = 2.f;
         #endif //NF_BACKPROP_TRADITIONAL
         
-        // --------------------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------
         //  Back-Propagation
         //  layer - l
         //  Note: 
-        //   - in fact we have count-1 layers bacuase the 0th layer is the input layer -> the reason why I compute ws, bs, as of the (l-1) layer 
+        //   - in fact we have count-1 layers bacuase the 0th layer is the input layer 
+        //      -> the reason why I compute ws, bs, as of the (l-1) layer 
         //   - a0 wb0 a1 wb1 a2 wb2 ... a(n-1) wb(n-1) an 
         //   - l points to the layer after the current one
         //   - the last layer is the output layer 
-        // --------------------------------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------------
         for (size_t l = nn.arch_count-1; l > 0; --l) {
             // current activation - j
             for (size_t j = 0; j < nn.as[l].cols; ++j) {
@@ -600,20 +603,6 @@ NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
         }
     }
     
-    // normalizse the gradint aka do the 1/n part
-    for (size_t l = 0; l < gn.arch_count-1; ++l) {
-        for (size_t i = 0; i < gn.ws[l].rows; ++i) {
-            for (size_t j = 0; j < gn.ws[l].cols; ++j) {
-                NF_MAT_AT(gn.ws[l], i, j) /= n;
-            }
-        }
-        for (size_t i = 0; i < gn.bs[l].rows; ++i) {
-            for (size_t j = 0; j < gn.bs[l].cols; ++j) {
-                NF_MAT_AT(gn.bs[l], i, j) /= n;
-            }
-        }
-    }
-
     return gn;
 }
 
