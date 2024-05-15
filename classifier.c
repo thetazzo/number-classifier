@@ -163,7 +163,7 @@ int main(int argc, char **argv)
                     nvc += 1;
                 }
             }
-            snprintf(test_sb, sizeof(test_sb), "No. valid is %zu\n\n\n\nNo. invalid is %zu", vc, nvc);
+            snprintf(test_sb, sizeof(test_sb), "Out of %zu images\n\n\n\n %zu succefully classified\n\n\n\n %zu failed to classify", testing_imgs.count, vc, nvc);
         }
         // Application rendering starts here
         size_t w = GetScreenWidth();
