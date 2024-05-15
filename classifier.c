@@ -34,7 +34,7 @@ char *pop_argv(int *argc, char ***argv)
 // Neural network constants
 // =============================================================================
 size_t arch[] = {28*28, 16, 16, 9, 9, 10}; // this specifies the architecture of the neural network
-float rate = 0.2f; // neural network learning rate
+float rate = 0.5f; // neural network learning rate
 
 int main(int argc, char **argv)
 {
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     size_t img_width = 28;
 
     size_t epoch = 0;
-    size_t max_epoch = 200;
+    size_t max_epoch = 1000;
     Batch batch = {0};
     size_t batch_size = 25;
     size_t batches_per_frame = 20;
@@ -110,6 +110,8 @@ int main(int argc, char **argv)
     bool isRunning = false;
 
     char info_sb[256]; // display epoch, activation, rate, cost, etc.
+    char test_sb[256]; // display test results
+    snprintf(test_sb, sizeof(test_sb), "");
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_SPACE)) {
             isRunning = !isRunning;
@@ -150,8 +152,7 @@ int main(int argc, char **argv)
                     nvc += 1;
                 }
             }
-            printf("No. valid is %zu\n", vc);
-            printf("No. invalid is %zu\n", nvc);
+            snprintf(test_sb, sizeof(test_sb), "No. valid is %zu\n\n\n\nNo. invalid is %zu", vc, nvc);
         }
         // Application rendering starts here
         size_t w = GetScreenWidth();
@@ -166,12 +167,10 @@ int main(int argc, char **argv)
         snprintf(
             info_sb,
             sizeof(info_sb),
-            "%s",
+            "%s :: %zu / %zu",
             isRunning ? "running" : "paused",
-            activation_as_str(),
-            rate,
-            cost_plot.count > 0 ? cost_plot.items[cost_plot.count-1] : 0,
-            training_imgs.count
+            epoch,
+            max_epoch
         );
         DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 0*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         snprintf(
@@ -209,6 +208,7 @@ int main(int argc, char **argv)
             testing_imgs.count
         );
         DrawTextEx(font, info_sb, CLITERAL(Vector2){100, 50 + 5*h*0.04f}, h*0.04f, 0.25f, WHITE); 
+        DrawTextEx(font, test_sb, CLITERAL(Vector2){100, 50 + 8*h*0.04f}, h*0.04f, 0.25f, WHITE); 
         // draw cost plot
         nui_plot(cost_plot, nui_layout_slot());
         // draw neural network
