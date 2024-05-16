@@ -28,8 +28,10 @@
 ```
 * To run the program execute
 ```bash
-./classifier
+./classifier <training_directory> <testing_directory>
 ```
+* `<training_directory>` ... specifies the location of images on which the neural model will be trained
+* `<testing_directory>` .... specifies the location of images on which the neural model will be tested
 ---
 
 ## Dependencies
