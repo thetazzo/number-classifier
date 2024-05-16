@@ -70,3 +70,4 @@
 * mnist database: http://yann.lecun.com/exdb/mnist/
 * mnist images (kaggle): https://www.kaggle.com/datasets/jidhumohan/mnist-png
 * nothings's stb: https://github.com/nothings/stb
+* tia.h: https://github.com/tayoldotdev/tia.h
