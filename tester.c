@@ -161,7 +161,7 @@ void tests_run(SDA tests)
         snprintf(
             cmp_cmd,
             sizeof(cmp_cmd),
-            "clang -Wall -Wextra -o %s %s",
+            "clang -Wall -Wextra -o %s %s -lm",
             test.exe_path, test.cmp_path
         ); 
 
