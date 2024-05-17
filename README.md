@@ -8,6 +8,10 @@
 
 * This application trains a neural network on **mnist** database of handwritten digits and produces a neural network model than can classify which digit appears on the given image
 
+<p align="center">
+    <img src="./assets/gif/in-action.gif" width="560" height="315" style=""></img>
+</p>
+
 --- 
 
 # MNIST database
@@ -24,8 +28,10 @@
 ```
 * To run the program execute
 ```bash
-./classifier
+./classifier <training_directory> <testing_directory>
 ```
+* `<training_directory>` ... specifies the location of images on which the neural model will be trained
+* `<testing_directory>` .... specifies the location of images on which the neural model will be tested
 ---
 
 ## Dependencies
