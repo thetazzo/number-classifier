@@ -233,11 +233,23 @@ int main(int argc, char **argv)
 {
     char *program = pop_argv(&argc, &argv);
 
+    if (argc == 0) {
+        fprintf(stderr, "ERROR: missing subcommand\n");
+        printf("Usage: %s <subcommand>\n", program);
+        printf("SUBCOMMANDS:\n");
+        printf("    - run    ... runs all tests\n");
+        return 1;
+    }
+
+    char *subcommand = pop_argv(&argc, &argv);
+
     SDA tests = {0};
     tests_import("./tests/", &tests);
-    // if tests_run == 1 then some errors occured
-    if(tests_run(tests)) {
-        return 1;
+    if (strcmp(subcommand, "run") == 0) {
+        // if tests_run == 1 then some errors occured
+        if(tests_run(tests)) {
+            return 1;
+        }
     }
     return 0;
 }
