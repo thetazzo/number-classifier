@@ -220,8 +220,18 @@ int tests_run(SDA tests)
     return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
-int main(void)
+char *pop_argv(int *argc, char ***argv)
 {
+    assert(argc > 0);
+    char *result = **argv;
+    (*argc) -= 1;
+    (*argv) += 1;
+    return result;
+}
+
+int main(int argc, char **argv)
+{
+    char *program = pop_argv(&argc, &argv);
 
     SDA tests = {0};
     tests_import("./tests/", &tests);
