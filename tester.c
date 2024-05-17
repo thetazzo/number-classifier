@@ -220,6 +220,11 @@ int tests_run(SDA tests)
     return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
+void tests_record()
+{
+    assert(0 && "not implemented");
+}
+
 char *pop_argv(int *argc, char ***argv)
 {
     assert(argc > 0);
@@ -229,19 +234,25 @@ char *pop_argv(int *argc, char ***argv)
     return result;
 }
 
+void print_usage(const char *program)
+{
+    printf("Usage: %s <subcommand>\n", program);
+    printf("SUBCOMMANDS:\n");
+    printf("    - run    ... runs all tests\n");
+    printf("    - record ... record output of tests\n");
+}
+
 int main(int argc, char **argv)
 {
-    char *program = pop_argv(&argc, &argv);
+    const char *program = pop_argv(&argc, &argv);
 
     if (argc == 0) {
         fprintf(stderr, "ERROR: missing subcommand\n");
-        printf("Usage: %s <subcommand>\n", program);
-        printf("SUBCOMMANDS:\n");
-        printf("    - run    ... runs all tests\n");
+        print_usage(program);
         return 1;
     }
 
-    char *subcommand = pop_argv(&argc, &argv);
+    const char *subcommand = pop_argv(&argc, &argv);
 
     SDA tests = {0};
     tests_import("./tests/", &tests);
@@ -250,6 +261,11 @@ int main(int argc, char **argv)
         if(tests_run(tests)) {
             return 1;
         }
+    } else if (strcmp(subcommand, "record") == 0) {
+        tests_record();
+    } else {
+        fprintf(stderr, "ERROR: unknown subcommand `%s`\n", subcommand);
+        print_usage(program);
     }
     return 0;
 }
