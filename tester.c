@@ -153,7 +153,7 @@ void tests_import(char *dir_path, SDA *tests)
     closedir(fd);
 }
 
-void tests_run(SDA tests)
+int tests_run(SDA tests)
 {
     size_t cmp_fail_count = 0;
     size_t exe_fail_count = 0;
@@ -217,6 +217,7 @@ void tests_run(SDA tests)
             printf("[EXE FAIL] %s\n", test.cmp_path);
         }
     }
+    return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
 int main(void)
@@ -224,7 +225,9 @@ int main(void)
 
     SDA tests = {0};
     tests_import("./tests/", &tests);
-    tests_run(tests);
-
+    // if tests_run == 1 then some errors occured
+    if(tests_run(tests)) {
+        return 1;
+    }
     return 0;
 }
