@@ -61,6 +61,11 @@ char *str_reduce(char delim, char *str)
     return buf;
 }
 
+int str_prefix(const char *pre, const char *str)
+{
+    return strncmp(pre, str, strlen(pre)) == 0;
+}
+
 typedef enum {
     TEST_ENTRY,
     CMP_FAIL,
@@ -115,7 +120,7 @@ void tests_import(char *dir_path, SDA *tests)
     size_t tsti = 0;
     while ((de = readdir(fd)) != NULL) {
         char *file_name = de->d_name;
-        if (strcmp(file_name, ".") && strcmp(file_name, "..")) {
+        if (!str_prefix(".", file_name) && strcmp(file_name, ".") && strcmp(file_name, "..")) {
             if (is_comp_file(file_name)) {
                 char *prog_name = str_reduce('.', file_name);
                 strcpy(cmp_path[tsti], dir_path);
