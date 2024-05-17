@@ -55,7 +55,7 @@ char *str_reduce(char delim, char *str)
     char *buf = "";
     size_t i = 0;
     while (str[i] != delim) {
-        asprintf(&buf, "%s%c", buf, str[i]);
+        asprintf(&buf, "%s%c", buf, str[i]); 
         i += 1;
     }
     return buf;
