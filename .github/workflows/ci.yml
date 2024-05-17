@@ -1,0 +1,16 @@
+name: CI
+on: 
+  pull_request:
+  push:
+    branches: [ master ]
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: compile tester
+        run: |
+          clang -Wall -Wextra -o tester tester.c
+      - name: run tests
+        run: |
+          ./tester
