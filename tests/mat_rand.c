@@ -7,7 +7,8 @@ int main()
     nf_mat_rand(prob1, -1 , 1);
 
     NF_Mat prob2 = nf_mat_alloc(NULL, 4, 4);
-    nf_mat_rand(prob2, -1 , 1);
+//    nf_mat_rand(prob2, -1 , 1);
+    nf_mat_copy(prob2, prob1);
 
     size_t count = 0;
     for (size_t i = 0; i < 4; ++i) {
