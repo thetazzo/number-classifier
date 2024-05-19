@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
+#include <stdbool.h>
 #include <assert.h>
 
 #define ARRAY_LEN(xs) sizeof(xs)/sizeof(xs[0])
 
-#define SILENT_ 
+bool silent_ = false;
 
 // ================================================================= 
 // Macro specifying the inital dynamic array capacity
@@ -135,16 +136,16 @@ void tests_import(char *dir_path, SDA *tests)
                 };
                 da_append(tests, s);
                 tsti++;
-#ifndef SILENT_
-                printf("imported test `%s`\n", file_name);
-#endif
+                if (!silent_) { 
+                    printf("imported test `%s`\n", file_name);
+                }
             } else {
                 // remove all existing test compilations
                 char delete_fp[256];
                 snprintf(delete_fp, sizeof(delete_fp), "./tests/%s", file_name);
-#ifndef SILENT_
-                printf("deleting `%s`\n", delete_fp);
-#endif
+                if (!silent_) { 
+                    printf("deleting `%s`\n", delete_fp);
+                }
                 remove(delete_fp);
             }
         }
@@ -191,9 +192,9 @@ int tests_run(SDA tests)
             FILE *exe_fd = popen(exe_cmd, "r");
             char tout[256];
             fread(tout, sizeof(tout), ARRAY_LEN(tout), exe_fd);
-#ifndef SILENT_
-            printf("[stdout] %s\n", tout);
-#endif
+            if (!silent_) {
+                printf("[stdout] %s\n", tout);
+            }
             int exe_status = pclose(exe_fd);
             int exe_exitcode = exe_status/256;
             if (exe_exitcode != 0) {
@@ -238,8 +239,11 @@ void print_usage(const char *program)
 {
     printf("Usage: %s <subcommand>\n", program);
     printf("SUBCOMMANDS:\n");
-    printf("    - run    ... runs all tests\n");
-    printf("    - record ... record output of tests\n");
+    printf("    help ............ print usage\n");
+    printf("    record .......... record output of tests\n");
+    printf("    run <flag> ...... runs all tests\n");
+    printf("FLAGS:\n");
+    printf("    -s .............. don't print logs\n");
 }
 
 int main(int argc, char **argv)
@@ -254,6 +258,17 @@ int main(int argc, char **argv)
 
     const char *subcommand = pop_argv(&argc, &argv);
 
+    while (argc > 0) {
+        const char *flag = pop_argv(&argc, &argv);
+        if (str_prefix("-", flag)) {
+            if (strcmp(flag, "-s") == 0) {
+                silent_ = true;
+            }
+        } else {
+            printf("[WARNING]: skipping unknown flag `%s`. Be sure to prefix flags with `-`.\n", flag);
+        }
+    }
+
     SDA tests = {0};
     tests_import("./tests/", &tests);
     if (strcmp(subcommand, "run") == 0) {
@@ -263,6 +278,8 @@ int main(int argc, char **argv)
         }
     } else if (strcmp(subcommand, "record") == 0) {
         tests_record();
+    } else if (strcmp(subcommand, "help") == 0) {
+        print_usage(program);
     } else {
         fprintf(stderr, "ERROR: unknown subcommand `%s`\n", subcommand);
         print_usage(program);
