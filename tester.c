@@ -62,6 +62,33 @@ char *str_reduce(char delim, char *str)
     return buf;
 }
 
+// removes the delimiter from the string
+char *str_reduce2(char *delim, char *str)
+{
+    char *buf = "";
+    size_t i = 0;
+    while (i < strlen(str)) {
+        if (str[i] == delim[0]) {
+            size_t k = i;
+            size_t j = 1;
+            // skip characters that are in the delimiter
+            while (j < strlen(delim) && str[i+1] == delim[j]) {
+                i += 1;
+                j += 1;
+            }
+            // if not all characters from the delimiter were reached dont do anything
+            if (j < strlen(delim)) {
+                i = k; // restore position
+                asprintf(&buf, "%s%c", buf, str[i]); 
+            }
+        } else {
+            asprintf(&buf, "%s%c", buf, str[i]); 
+        }
+        i += 1;
+    }
+    return buf;
+}
+
 int str_prefix(const char *pre, const char *str)
 {
     return strncmp(pre, str, strlen(pre)) == 0;
