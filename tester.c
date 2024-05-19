@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
@@ -240,7 +241,7 @@ int tests_run(SDA tests)
 
     for (size_t k = 0; k < tests.count; ++k) {
         Sample test = tests.items[k];
-        if (test.type == CMP_FAIL) {
+       if (test.type == CMP_FAIL) {
             printf("[CMP FAIL] %s\n", test.cmp_path);
         } else if (test.type == EXE_FAIL) {
             printf("[EXE FAIL] %s\n", test.cmp_path);
@@ -249,9 +250,69 @@ int tests_run(SDA tests)
     return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
-void tests_record()
+void tests_record(SDA tests)
 {
-    assert(0 && "not implemented");
+    // assume that all samples here are of type tests
+    for (size_t k = 0; k < tests.count; ++k) {
+        Sample test = tests.items[k];
+        // compile test
+        char cmp_cmd[256];
+        snprintf(
+            cmp_cmd,
+            sizeof(cmp_cmd),
+            "clang -Wall -Wextra -o %s %s -lm",
+            test.exe_path, test.cmp_path
+        ); 
+
+        printf("[CMP] %s\n", test.cmp_path);
+
+        FILE *cmp_fd = popen(cmp_cmd, "r");
+        int cmp_status = pclose(cmp_fd);
+        int cmp_exitcode = cmp_status/256;
+        if (cmp_exitcode != 0) {
+            fprintf(stderr, "Compilation failed for `%s`", test.cmp_path);
+            exit(1);
+        } else {
+            // execute test
+            char exe_cmd[256];
+            snprintf(
+                exe_cmd,
+                sizeof(exe_cmd),
+                "%s",
+                test.exe_path
+            ); 
+            printf("[EXE] %s\n", test.exe_path);
+            FILE *exe_fd = popen(exe_cmd, "r");
+
+            // read output of executed test
+            char tout[256];
+            fread(tout, sizeof(char), ARRAY_LEN(tout), exe_fd);
+
+            if (!silent_) {
+                printf("[stdout] %s\n", tout);
+            }
+
+            int exe_status = pclose(exe_fd);
+            int exe_exitcode = exe_status/256;
+            if (exe_exitcode != 0) {
+                fprintf(stderr, "[ERROR]: execution failed: `%s`", test.exe_path);
+                exit(1);
+            }
+
+            // open a test result file descriptor and construct it
+            char tst_fn[256];
+            snprintf(tst_fn, sizeof(tst_fn), "%s.tst", test.exe_path);
+            FILE *wfd = fopen(tst_fn, "wb");
+            fprintf(wfd, "--------------------------------------------------\n");
+            fprintf(wfd, "::stdout\n");
+            fprintf(wfd, "%s", tout);
+            fprintf(wfd, "--------------------------------------------------\n");
+            fprintf(wfd, "::exitcode\n");
+            fprintf(wfd, "%d", exe_exitcode);
+            fclose(wfd);
+            printf("[RECORD] %s\n", tst_fn);
+        }
+    }
 }
 
 char *pop_argv(int *argc, char ***argv)
@@ -267,11 +328,11 @@ void print_usage(const char *program)
 {
     printf("Usage: %s <subcommand>\n", program);
     printf("SUBCOMMANDS:\n");
-    printf("    help ............ print usage\n");
-    printf("    record .......... record output of tests\n");
-    printf("    run <flag> ...... runs all tests\n");
+    printf("    help ................................ print usage\n");
+    printf("    record <?flag> <?file_path>.......... uecord output of tests\n");
+    printf("    run <?flag> <?file_path> ............ runs all tests\n");
     printf("FLAGS:\n");
-    printf("    -s .............. don't print logs\n");
+    printf("    -s .................................. don't print logs\n");
 }
 
 int main(int argc, char **argv)
@@ -291,6 +352,7 @@ int main(int argc, char **argv)
     while (argc > 0) {
         char *flag = pop_argv(&argc, &argv);
         if (str_prefix("-", flag)) {
+            // Handle subcommand flags
             if (strcmp(flag, "-s") == 0) {
                 silent_ = true;
             } else {
@@ -299,6 +361,8 @@ int main(int argc, char **argv)
                 exit(1);
             }
         } else {
+            // Handle arguments that are not subcommand flags
+            // Handle single file operations
             FILE *fd = fopen(flag, "r");
             if (fd == NULL) {
                 fprintf(stderr, "[ERROR]: %s: `%s`", strerror(errno), flag);
@@ -316,15 +380,17 @@ int main(int argc, char **argv)
     }
 
     if (tests.count == 0) {
+        // Import all test from testing folder when no single test was provided
         tests_import("./tests/", &tests);
     }
+
     if (strcmp(subcommand, "run") == 0) {
         // if tests_run == 1 then some errors occured
         if(tests_run(tests)) {
             return 1;
         }
     } else if (strcmp(subcommand, "record") == 0) {
-        tests_record();
+        tests_record(tests);
     } else if (strcmp(subcommand, "help") == 0) {
         print_usage(program);
     } else {
