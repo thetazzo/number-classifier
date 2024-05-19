@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <errno.h>
 
 #define ARRAY_LEN(xs) sizeof(xs)/sizeof(xs[0])
 
@@ -285,19 +286,38 @@ int main(int argc, char **argv)
 
     const char *subcommand = pop_argv(&argc, &argv);
 
+    SDA tests = {0};
+
     while (argc > 0) {
-        const char *flag = pop_argv(&argc, &argv);
+        char *flag = pop_argv(&argc, &argv);
         if (str_prefix("-", flag)) {
             if (strcmp(flag, "-s") == 0) {
                 silent_ = true;
+            } else {
+                fprintf(stderr, "[ERROR]: unknown subcommand flag `%s`", flag);
+                print_usage(program);
+                exit(1);
             }
         } else {
-            printf("[WARNING]: skipping unknown flag `%s`. Be sure to prefix flags with `-`.\n", flag);
+            FILE *fd = fopen(flag, "r");
+            if (fd == NULL) {
+                fprintf(stderr, "[ERROR]: %s: `%s`", strerror(errno), flag);
+                exit(1);
+            }
+            fclose(fd);
+            char *exe_path = str_reduce2(".c", flag);
+            Sample test = {
+                .type = TEST_ENTRY,
+                .cmp_path = flag,
+                .exe_path = exe_path,
+            };
+            da_append(&tests, test);
         }
     }
 
-    SDA tests = {0};
-    tests_import("./tests/", &tests);
+    if (tests.count == 0) {
+        tests_import("./tests/", &tests);
+    }
     if (strcmp(subcommand, "run") == 0) {
         // if tests_run == 1 then some errors occured
         if(tests_run(tests)) {
