@@ -3,6 +3,8 @@
 
 int main()
 {
+    srand(69);
+
     NF_Mat prob1 = nf_mat_alloc(NULL, 4, 4);
     nf_mat_rand(prob1, -1 , 1);
 
