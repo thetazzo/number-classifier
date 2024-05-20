@@ -241,16 +241,20 @@ bool sample_result_verify(char *stdout_, int exitcode_, SampleResult sr)
     if (sr.exitcode_ != exitcode_) {
         if (!silent_) {
             printf("[TEST FAILED]\n");
-            printf("    [EXPECTED]: %d\n", sr.exitcode_);
-            printf("    [FOUND]: %d\n", exitcode_);
+            printf("%s\n", "[EXPECTED]:"); 
+            printf("%d\n", sr.exitcode_);
+            printf("%s\n", "[FOUND]:"); 
+            printf("%d\n", exitcode_);
         }
         return false;
     }
     if (strcmp(sr.stdout_, stdout_) != 0) {
         if (!silent_) {
             printf("[TEST FAILED]\n");
-            printf("    [EXPECTED]: %s\n", sr.stdout_);
-            printf("    [FOUND]: %s\n", stdout_);
+            printf("%s\n", "[EXPECTED]:"); 
+            printf("%s\n", sr.stdout_);
+            printf("%s\n", "[FOUND]:"); 
+            printf("%s\n", stdout_);
         }
         return false;
     }
