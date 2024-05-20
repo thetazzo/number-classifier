@@ -176,7 +176,7 @@ void sample_result_load(char * file_path, SampleResult *sr)
     }
     FILE *fp = fopen(file_path, "r");
     if (fp == NULL) {
-        fprintf(stderr, "[ERROR]: %s\n", strerror(errno));
+        fprintf(stderr, "[ERROR]: %s :: Missing test file `%s`\n", strerror(errno), file_path);
         exit(EXIT_FAILURE);
     }
 
@@ -239,13 +239,19 @@ int sample_compile(Sample s)
 bool sample_result_verify(char *stdout_, int exitcode_, SampleResult sr)
 {
     if (sr.exitcode_ != exitcode_) {
-        printf("[EXPECTED]: %d\n", sr.exitcode_);
-        printf("[FOUND]: %d\n", exitcode_);
+        if (!silent_) {
+            printf("[TEST FAILED]\n");
+            printf("    [EXPECTED]: %d\n", sr.exitcode_);
+            printf("    [FOUND]: %d\n", exitcode_);
+        }
         return false;
     }
     if (strcmp(sr.stdout_, stdout_) != 0) {
-        printf("[EXPECTED]: %s\n", sr.stdout_);
-        printf("[FOUND]: %s\n", stdout_);
+        if (!silent_) {
+            printf("[TEST FAILED]\n");
+            printf("    [EXPECTED]: %s\n", sr.stdout_);
+            printf("    [FOUND]: %s\n", stdout_);
+        }
         return false;
     }
     return true;
