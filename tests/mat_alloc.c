@@ -21,6 +21,7 @@ int main(void)
     NF_MAT_AT(to, 3, 0) = 0;
 
     NF_MAT_PRINT(ti);
+    printf("--------------------------------------\n");
     NF_MAT_PRINT(to);
 
     return 0;
