@@ -166,9 +166,54 @@ char *sample_type_name(SampleType t)
 }
 
 typedef struct {
+    int exitcode_;
+    char *stdout_;
+} SampleResult;
+
+void sample_result_load(char * file_path, SampleResult *sr)
+{
+    if (!silent_) {
+        printf("[LOADING RESULT] `%s`\n", file_path);
+    }
+    FILE *fp = fopen(file_path, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "[ERROR]: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    char *stdout_ = "";
+    int  exitcode_ = -1;
+    // TODO: trim the trailing `\n` character from `line`
+    while ((read = getline(&line, &len, fp)) != -1) {
+        if (strcmp(line, "::stdout\n")==0) {
+            while ((read = getline(&line, &len, fp)) != -1 && strcmp(line, "::exitcode\n") != 0) {
+                asprintf(&stdout_, "%s%s", stdout_, line);
+            }
+        }
+        if (strcmp(line, "::exitcode\n")==0) {
+            while ((read = getline(&line, &len, fp)) != -1 && strcmp(line, "::exitcode\n") != 0) {
+                if (line[0] == '0') {
+                    exitcode_ = 0;
+                } else if (line [0] == '1') {
+                    exitcode_ = 1;
+                }
+            }
+        }
+    }
+    sr->stdout_ = stdout_,
+    sr->exitcode_ = exitcode_,
+    fclose(fp);
+}
+
+typedef struct {
     SampleType type;
     char *cmp_path;
     char *exe_path;
+    SampleResult result;
 } Sample;
 
 // Compiles the given sample
@@ -190,6 +235,17 @@ int sample_compile(Sample s)
     printf("[CMP] %s\n", s.cmp_path);
 
     return cmp_exitcode;
+}
+
+bool sample_result_verify(char *stdout_, int exitcode_, SampleResult sr)
+{
+    if (sr.exitcode_ != exitcode_) {
+        return false;
+    }
+    if (strcmp(sr.stdout_, stdout_) != 0) {
+        return false;
+    }
+    return true;
 }
 
 void sample_dump(Sample s)
@@ -273,11 +329,17 @@ int tests_run(SDA tests)
             char exe_stdout[256];
             fread(exe_stdout, sizeof(exe_stdout), ARRAY_LEN(exe_stdout), exe_fd);
             if (!silent_) {
-                printf("[stdout] %s", exe_stdout);
+                if (exe_stdout[0] != '\0') {
+                    printf("[stdout] %s", exe_stdout);
+                }
             }
             int exe_status = pclose(exe_fd);
             int exe_exitcode = exe_status/256;
-            if (exe_exitcode != 0) {
+            char *test_result_path = "";
+            asprintf(&test_result_path, "%s.tst", test.exe_path);
+            SampleResult sr = {0};
+            sample_result_load(test_result_path, &sr);
+            if (!sample_result_verify(exe_stdout, exe_exitcode, sr)) {
                 tests.items[k].type = EXE_FAIL;
                 exe_fail_count += 1;
             }
@@ -389,6 +451,7 @@ int main(int argc, char **argv)
 
     const char *subcommand = pop_argv(&argc, &argv);
 
+    // Structure holding all references to tests
     SDA tests = {0};
 
     while (argc > 0) {
