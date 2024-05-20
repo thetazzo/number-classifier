@@ -231,7 +231,7 @@ int tests_run(SDA tests)
             char exe_stdout[256];
             fread(exe_stdout, sizeof(exe_stdout), ARRAY_LEN(exe_stdout), exe_fd);
             if (!silent_) {
-                printf("[stdout] %s\n", exe_stdout);
+                printf("[stdout] %s", exe_stdout);
             }
             int exe_status = pclose(exe_fd);
             int exe_exitcode = exe_status/256;
@@ -242,20 +242,20 @@ int tests_run(SDA tests)
         }
     }
 
+    // Dump test results
     printf("\n");
     printf("Executed %zu tests\n", tests.count);
     printf("Compilation failed: %zu, Execution failed: %zu\n", cmp_fail_count, exe_fail_count);
-
-    printf("--------------------------------------------------\n");
-
+    printf("----------------------------------------------\n");
     for (size_t k = 0; k < tests.count; ++k) {
         Sample test = tests.items[k];
-       if (test.type == CMP_FAIL) {
+        if (test.type == CMP_FAIL) {
             printf("[CMP FAIL] %s\n", test.cmp_path);
         } else if (test.type == EXE_FAIL) {
             printf("[EXE FAIL] %s\n", test.cmp_path);
         }
     }
+
     return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
@@ -303,10 +303,8 @@ void tests_record(SDA tests)
 
             // open a test result file descriptor and construct it
             FILE *wfd = fopen(tst_fn, "wb");
-            fprintf(wfd, "--------------------------------------------------\n");
             fprintf(wfd, "::stdout\n");
             fprintf(wfd, "%s", exe_stdout);
-            fprintf(wfd, "--------------------------------------------------\n");
             fprintf(wfd, "::exitcode\n");
             fprintf(wfd, "%d", exe_exitcode);
             fclose(wfd);
