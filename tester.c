@@ -219,10 +219,10 @@ int tests_run(SDA tests)
             ); 
             printf("[EXE] %s\n", test.exe_path);
             FILE *exe_fd = popen(exe_cmd, "r");
-            char tout[256];
-            fread(tout, sizeof(tout), ARRAY_LEN(tout), exe_fd);
+            char exe_stdout[256];
+            fread(exe_stdout, sizeof(exe_stdout), ARRAY_LEN(exe_stdout), exe_fd);
             if (!silent_) {
-                printf("[stdout] %s\n", tout);
+                printf("[stdout] %s\n", exe_stdout);
             }
             int exe_status = pclose(exe_fd);
             int exe_exitcode = exe_status/256;
@@ -269,6 +269,7 @@ void tests_record(SDA tests)
         FILE *cmp_fd = popen(cmp_cmd, "r");
         int cmp_status = pclose(cmp_fd);
         int cmp_exitcode = cmp_status/256;
+
         if (cmp_exitcode != 0) {
             fprintf(stderr, "Compilation failed for `%s`", test.cmp_path);
             exit(1);
@@ -285,11 +286,11 @@ void tests_record(SDA tests)
             FILE *exe_fd = popen(exe_cmd, "r");
 
             // read output of executed test
-            char tout[256];
-            fread(tout, sizeof(char), ARRAY_LEN(tout), exe_fd);
+            char exe_stdout[256];
+            fread(exe_stdout, sizeof(char), ARRAY_LEN(exe_stdout), exe_fd);
 
             if (!silent_) {
-                printf("[stdout] %s\n", tout);
+                printf("[stdout] %s\n", exe_stdout);
             }
 
             int exe_status = pclose(exe_fd);
@@ -299,17 +300,20 @@ void tests_record(SDA tests)
                 exit(1);
             }
 
-            // open a test result file descriptor and construct it
+            // construct test output file name
             char tst_fn[256];
             snprintf(tst_fn, sizeof(tst_fn), "%s.tst", test.exe_path);
+
+            // open a test result file descriptor and construct it
             FILE *wfd = fopen(tst_fn, "wb");
             fprintf(wfd, "--------------------------------------------------\n");
             fprintf(wfd, "::stdout\n");
-            fprintf(wfd, "%s", tout);
+            fprintf(wfd, "%s", exe_stdout);
             fprintf(wfd, "--------------------------------------------------\n");
             fprintf(wfd, "::exitcode\n");
             fprintf(wfd, "%d", exe_exitcode);
             fclose(wfd);
+
             printf("[RECORD] %s\n", tst_fn);
         }
     }
