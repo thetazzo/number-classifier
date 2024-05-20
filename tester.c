@@ -33,6 +33,7 @@ bool silent_ = false;
     } while (0)                                                                           
 #endif // da_append
 
+// @depricated
 int is_cmp_file(char *fn)
 {
     for (size_t i = 0; i < strlen(fn); ++i) {
@@ -91,9 +92,56 @@ char *str_reduce2(char *delim, char *str)
     return buf;
 }
 
+int str_suffix(const char *str, const char *suf)
+{
+    size_t str_len = strlen(str);
+    size_t suf_len = strlen(suf);
+    int i = suf_len-1;
+    size_t j = 0;
+    while (i >= 0 && str[str_len-1-j] == suf[i]) {
+        j+=1;
+        i-=1;
+    }
+    return i == -1;
+}
+
+int MATCH_CMP_ONLY(const char *v) {
+    int cond1 = str_suffix(v, ".c") == 1 ? 0 : 1;
+    int cond2 = str_suffix(v, ".tst") == 1 ? 0 : 1;
+    return cond1 == cond2 ? 1 : 0;
+}
+
 int str_prefix(const char *pre, const char *str)
 {
     return strncmp(pre, str, strlen(pre)) == 0;
+}
+
+int delete_files_delim(int (*f)(const char *delim), char *root_path)
+{
+    struct dirent *de;
+
+    DIR *fd = opendir(root_path);
+
+    if (fd == NULL) {
+        fprintf(stderr, "Directory `%s` could not be opened", root_path);
+        exit(1);
+    }
+
+    while ((de = readdir(fd)) != NULL) {
+        char *file_name = de->d_name;
+        if (!str_prefix(".", file_name) && strcmp(file_name, ".") && strcmp(file_name, "..")) {
+            if (f(file_name) == 1) {
+                char delete_fp[256];
+                snprintf(delete_fp, sizeof(delete_fp), "./tests/%s", file_name);
+                if (!silent_) { 
+                    printf("deleting `%s`\n", delete_fp);
+                }
+                remove(delete_fp);
+            }  
+        }
+    }
+    closedir(fd);
+    return 0;
 }
 
 typedef enum {
@@ -166,41 +214,35 @@ void tests_import(char *dir_path, SDA *tests)
         exit(1);
     }
 
+    // delete compiled files
+    delete_files_delim(MATCH_CMP_ONLY, dir_path);
+
     char cmp_path[256][256];
     char exe_path[256][256];
-    size_t tsti = 0;
     while ((de = readdir(fd)) != NULL) {
         char *file_name = de->d_name;
         if (!str_prefix(".", file_name) && strcmp(file_name, ".") && strcmp(file_name, "..")) {
-            if (is_cmp_file(file_name)) {
+            if (str_suffix(file_name, ".c")) {
                 char *prog_name = str_reduce('.', file_name);
-                strcpy(cmp_path[tsti], dir_path);
-                strcat(cmp_path[tsti], prog_name);
-                strcat(cmp_path[tsti], ".c");
-                strcpy(exe_path[tsti], dir_path);
-                strcat(exe_path[tsti], prog_name);
-                Sample s = {
+                // prepare compilation path
+                strcpy(cmp_path[tests->count], dir_path);
+                strcat(cmp_path[tests->count], prog_name);
+                strcat(cmp_path[tests->count], ".c");
+                // prepare execution path
+                strcpy(exe_path[tests->count], dir_path);
+                strcat(exe_path[tests->count], prog_name);
+                Sample test = {
                     .type = TEST_ENTRY,
-                    .cmp_path = cmp_path[tsti],
-                    .exe_path = exe_path[tsti],
+                    .cmp_path = cmp_path[tests->count],
+                    .exe_path = exe_path[tests->count],
                 };
-                da_append(tests, s);
-                tsti++;
+                da_append(tests, test);
                 if (!silent_) { 
                     printf("imported test `%s`\n", file_name);
                 }
-            } else {
-                // remove all existing test compilations
-                char delete_fp[256];
-                snprintf(delete_fp, sizeof(delete_fp), "./tests/%s", file_name);
-                if (!silent_) { 
-                    printf("deleting `%s`\n", delete_fp);
-                }
-                remove(delete_fp);
             }
         }
     }
-
     closedir(fd);
 }
 
@@ -328,6 +370,7 @@ void print_usage(const char *program)
     printf("Usage: %s <subcommand>\n", program);
     printf("SUBCOMMANDS:\n");
     printf("    help ................................ print usage\n");
+    printf("    clean ............................... deletes compiled tests\n");
     printf("    record <?flag> <?file_path>.......... uecord output of tests\n");
     printf("    run <?flag> <?file_path> ............ runs all tests\n");
     printf("FLAGS:\n");
@@ -378,7 +421,7 @@ int main(int argc, char **argv)
         }
     }
 
-    if (tests.count == 0) {
+    if (strcmp(subcommand, "clean") != 0 && tests.count == 0) {
         // Import all test from testing folder when no single test was provided
         tests_import("./tests/", &tests);
     }
@@ -390,6 +433,8 @@ int main(int argc, char **argv)
         }
     } else if (strcmp(subcommand, "record") == 0) {
         tests_record(tests);
+    } else if (strcmp(subcommand, "clean") == 0) {
+        delete_files_delim(MATCH_CMP_ONLY, "./tests/");
     } else if (strcmp(subcommand, "help") == 0) {
         print_usage(program);
     } else {
