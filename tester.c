@@ -306,8 +306,6 @@ int tests_run(SDA tests)
 {
     size_t cmp_fail_count = 0;
     size_t exe_fail_count = 0;
-
-    // assume that all samples here are of type tests
     for (size_t k = 0; k < tests.count; ++k) {
         Sample test = tests.items[k];
         // compile test
@@ -317,15 +315,9 @@ int tests_run(SDA tests)
             cmp_fail_count += 1;
         } else {
             // execute test
-            char exe_cmd[256];
-            snprintf(
-                exe_cmd,
-                sizeof(exe_cmd),
-                "%s",
-                test.exe_path
-            ); 
             printf("[EXE] %s\n", test.exe_path);
-            FILE *exe_fd = popen(exe_cmd, "r");
+            FILE *exe_fd = popen(test.exe_path, "r");
+            // capture stdout
             char exe_stdout[256];
             fread(exe_stdout, sizeof(exe_stdout), ARRAY_LEN(exe_stdout), exe_fd);
             if (!silent_) {
@@ -333,6 +325,7 @@ int tests_run(SDA tests)
                     printf("[stdout] %s", exe_stdout);
                 }
             }
+            // capture exit code
             int exe_status = pclose(exe_fd);
             int exe_exitcode = exe_status/256;
             char *test_result_path = "";
@@ -345,11 +338,14 @@ int tests_run(SDA tests)
             }
         }
     }
-
     // Dump test results
     printf("\n");
     printf("Executed %zu tests\n", tests.count);
-    printf("Compilation failed: %zu, Execution failed: %zu\n", cmp_fail_count, exe_fail_count);
+    printf(
+        "Compilation failed: %zu, Execution failed: %zu\n",
+        cmp_fail_count,
+        exe_fail_count
+    );
     printf("----------------------------------------------\n");
     for (size_t k = 0; k < tests.count; ++k) {
         Sample test = tests.items[k];
@@ -359,7 +355,6 @@ int tests_run(SDA tests)
             printf("[EXE FAIL] %s\n", test.cmp_path);
         }
     }
-
     return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
