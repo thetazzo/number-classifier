@@ -52,7 +52,7 @@
 // ================================================================= 
 // Raylib Color interpreation of the NUI_BACKGROUND 
 // ================================================================= 
-Color nui_background_color();
+Color nui_background_color(void);
 
 typedef struct {
     float x; // position on the x axis
@@ -126,7 +126,7 @@ void nui_render_nn_activations_heatmap(NF_NN nn, NUI_Rect r);
 
 #ifdef NUI_IMPLEMENTATION
 
-Color nui_background_color()
+Color nui_background_color(void)
 {
     return CLITERAL(Color)NUI_BACKGROUND;
 }

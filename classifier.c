@@ -100,8 +100,6 @@ int main(int argc, char **argv)
     InitWindow(WIDTH, HEIGHT, "Number Classifier");
     Font font = LoadFont("./assets/fonts/iosevka-term-ss02-regular.ttf");
 
-    size_t img_width = 28;
-
     size_t epoch = 0;
     size_t max_epoch = 1000;
     Batch batch = {0};
@@ -168,12 +166,11 @@ int main(int argc, char **argv)
         // Application rendering starts here
         size_t w = GetScreenWidth();
         size_t h = GetScreenHeight();
-        float scale = h*0.009f;
         NUI_Rect root = {0, 0, w, h};
         BeginDrawing();
         ClearBackground(nui_background_color());
         nui_layout_begin(NLO_HORZ, root, 3, 0);
-        NUI_Rect isr = nui_layout_slot();
+        nui_layout_slot();
         // draw info about the neural network
         snprintf(
             info_sb,

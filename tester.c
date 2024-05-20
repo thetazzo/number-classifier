@@ -430,7 +430,7 @@ void tests_record(SDA tests)
 
 char *pop_argv(int *argc, char ***argv)
 {
-    assert(argc > 0);
+    assert(*argc > 0);
     char *result = **argv;
     (*argc) -= 1;
     (*argv) += 1;

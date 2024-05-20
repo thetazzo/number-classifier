@@ -42,9 +42,9 @@ typedef enum {
 } NF_Act;
 
 // Activation name represented as a string
-char *nf_activation_as_str();
+char *nf_activation_as_str(void);
 // Normalization function name represented as a string
-char *nf_normf_as_str();
+char *nf_normf_as_str(void);
 
 float nf_sigmoidf(float x);
 float nf_reluf(float x);
@@ -180,7 +180,7 @@ float rand_float(void)
 //            Activation Functions
 // ==========================================
 
-char *nf_activation_as_str()
+char *nf_activation_as_str(void)
 {
     switch (NF_NN_ACT) {
         case NF_ACT_SIG:
@@ -236,7 +236,7 @@ float nf_gelu(float x)
 //            Normalization Functions
 // ==========================================
 
-char *nf_normf_as_str()
+char *nf_normf_as_str(void)
 {
 #ifdef NF_NN_NORMF
     switch (NF_NN_NORMF) {
