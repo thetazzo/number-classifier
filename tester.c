@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
@@ -240,9 +239,13 @@ int sample_compile(Sample s)
 bool sample_result_verify(char *stdout_, int exitcode_, SampleResult sr)
 {
     if (sr.exitcode_ != exitcode_) {
+        printf("[EXPECTED]: %d\n", sr.exitcode_);
+        printf("[FOUND]: %d\n", exitcode_);
         return false;
     }
     if (strcmp(sr.stdout_, stdout_) != 0) {
+        printf("[EXPECTED]: %s\n", sr.stdout_);
+        printf("[FOUND]: %s\n", stdout_);
         return false;
     }
     return true;
@@ -258,6 +261,15 @@ typedef struct {
     size_t capacity;
     Sample *items;
 } SDA;
+
+void test_read_output(FILE *test_fp, char **dst)
+{
+    char line[256];
+    while (fgets(line, 256, test_fp)) {
+        asprintf(dst, "%s%s", *dst, line);
+    }
+}
+
 
 void tests_import(char *dir_path, SDA *tests)
 {
@@ -316,19 +328,20 @@ int tests_run(SDA tests)
         } else {
             // execute test
             printf("[EXE] %s\n", test.exe_path);
-            FILE *exe_fd = popen(test.exe_path, "r");
-            // capture stdout
-            char exe_stdout[256];
-            fread(exe_stdout, sizeof(exe_stdout), ARRAY_LEN(exe_stdout), exe_fd);
+            FILE *test_fp = popen(test.exe_path, "r");
+            // capture whole stdout
+            char *exe_stdout = "";
+            test_read_output(test_fp, &exe_stdout);
             if (!silent_) {
                 if (exe_stdout[0] != '\0') {
                     printf("[stdout] %s", exe_stdout);
                 }
             }
             // capture exit code
-            int exe_status = pclose(exe_fd);
+            int exe_status = pclose(test_fp);
             int exe_exitcode = exe_status/256;
             char *test_result_path = "";
+
             asprintf(&test_result_path, "%s.tst", test.exe_path);
             SampleResult sr = {0};
             sample_result_load(test_result_path, &sr);
@@ -371,25 +384,17 @@ void tests_record(SDA tests)
             exit(1);
         } else {
             // execute test
-            char exe_cmd[256];
-            snprintf(
-                exe_cmd,
-                sizeof(exe_cmd),
-                "%s",
-                test.exe_path
-            ); 
             printf("[EXE] %s\n", test.exe_path);
-            FILE *exe_fd = popen(exe_cmd, "r");
+            FILE *test_fp = popen(test.exe_path, "r");
 
             // read output of executed test
-            char exe_stdout[256];
-            fread(exe_stdout, sizeof(char), ARRAY_LEN(exe_stdout), exe_fd);
-
+            char *exe_stdout = "";
+            test_read_output(test_fp, &exe_stdout);
             if (!silent_) {
                 printf("[stdout] %s\n", exe_stdout);
             }
 
-            int exe_status = pclose(exe_fd);
+            int exe_status = pclose(test_fp);
             int exe_exitcode = exe_status/256;
             if (exe_exitcode != 0) {
                 fprintf(stderr, "[ERROR]: execution failed: `%s`", test.exe_path);
