@@ -69,9 +69,9 @@ clang -Wall -Wextra -o ./tester ./tester.c
     * Use argv to supply the path to the image
 * [x] Test the neural model with the testing image
 * [x] Render the result of the test in the app
-* [ ] Introduce `tia.h` for loading multiple images into one single data structure 
-* [ ] Use `tia.h` for loading all `mnist` training images
-* [ ] Use `tia.h` for loading all `mnist` testing images
+* [x] Introduce `tia.h` for loading multiple images into one single data structure 
+* [x] Use `tia.h` for loading all `mnist` training images
+* [x] Use `tia.h` for loading all `mnist` testing images
 * [ ] Enable switching between random testing images for testing
 * [ ] Validate the correctnes of the current training image
 * [ ] Test validation on all testing images and count the amout of correct validations
