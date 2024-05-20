@@ -33,7 +33,7 @@ bool silent_ = false;
     } while (0)                                                                           
 #endif // da_append
 
-int is_comp_file(char *fn)
+int is_cmp_file(char *fn)
 {
     for (size_t i = 0; i < strlen(fn); ++i) {
         char c = fn[i];
@@ -123,6 +123,27 @@ typedef struct {
     char *exe_path;
 } Sample;
 
+// Compiles the given sample
+//     => exitcode ... {int} the exit code of the compilation
+int sample_compile(Sample s)
+{
+    char cmp_cmd[256];
+    snprintf(
+        cmp_cmd,
+        sizeof(cmp_cmd),
+        "clang -Wall -Wextra -o %s %s -lm",
+        s.exe_path, s.cmp_path
+    ); 
+
+    FILE *cmp_fd = popen(cmp_cmd, "r");
+    int cmp_status = pclose(cmp_fd);
+    int cmp_exitcode = cmp_status/256;
+
+    printf("[CMP] %s\n", s.cmp_path);
+
+    return cmp_exitcode;
+}
+
 void sample_dump(Sample s)
 {
     printf("cmp_path: %s, exe_path: %s, type: %s\n", s.cmp_path, s.exe_path, sample_type_name(s.type)); 
@@ -151,7 +172,7 @@ void tests_import(char *dir_path, SDA *tests)
     while ((de = readdir(fd)) != NULL) {
         char *file_name = de->d_name;
         if (!str_prefix(".", file_name) && strcmp(file_name, ".") && strcmp(file_name, "..")) {
-            if (is_comp_file(file_name)) {
+            if (is_cmp_file(file_name)) {
                 char *prog_name = str_reduce('.', file_name);
                 strcpy(cmp_path[tsti], dir_path);
                 strcat(cmp_path[tsti], prog_name);
@@ -192,19 +213,7 @@ int tests_run(SDA tests)
     for (size_t k = 0; k < tests.count; ++k) {
         Sample test = tests.items[k];
         // compile test
-        char cmp_cmd[256];
-        snprintf(
-            cmp_cmd,
-            sizeof(cmp_cmd),
-            "clang -Wall -Wextra -o %s %s -lm",
-            test.exe_path, test.cmp_path
-        ); 
-
-        printf("[CMP] %s\n", test.cmp_path);
-
-        FILE *cmp_fd = popen(cmp_cmd, "r");
-        int cmp_status = pclose(cmp_fd);
-        int cmp_exitcode = cmp_status/256;
+        int cmp_exitcode = sample_compile(test);
         if (cmp_exitcode != 0) {
             tests.items[k].type = CMP_FAIL;
             cmp_fail_count += 1;
@@ -256,19 +265,7 @@ void tests_record(SDA tests)
     for (size_t k = 0; k < tests.count; ++k) {
         Sample test = tests.items[k];
         // compile test
-        char cmp_cmd[256];
-        snprintf(
-            cmp_cmd,
-            sizeof(cmp_cmd),
-            "clang -Wall -Wextra -o %s %s -lm",
-            test.exe_path, test.cmp_path
-        ); 
-
-        printf("[CMP] %s\n", test.cmp_path);
-
-        FILE *cmp_fd = popen(cmp_cmd, "r");
-        int cmp_status = pclose(cmp_fd);
-        int cmp_exitcode = cmp_status/256;
+        int cmp_exitcode = sample_compile(test);
 
         if (cmp_exitcode != 0) {
             fprintf(stderr, "Compilation failed for `%s`", test.cmp_path);
