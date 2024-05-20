@@ -40,6 +40,21 @@
 
 ---
 
+## Testing framework
+
+### Usage
+
+* Build
+```c
+clang -Wall -Wextra -o ./tester ./tester.c
+```
+* Run
+```c
+./tester
+```
+
+---
+
 # Project Plans
 * [x] Setup basic window with Raylib
 * [x] Introduce `nui.h` and `nf.h` as libraries
