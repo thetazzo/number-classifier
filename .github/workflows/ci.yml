@@ -13,4 +13,4 @@ jobs:
           clang -Wall -Wextra -o tester tester.c
       - name: run tests
         run: |
-          ./tester
+          ./tester run -s

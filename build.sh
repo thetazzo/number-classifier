@@ -11,4 +11,5 @@ CFLAGS="-O3 -Wall -Wextra"
 CLIBS="-lm"
 
 clang $CFLAGS $RFLAGS -o ./classifier ./classifier.c $CLIBS $RLIBS
+clang -Wall -Wextra -o tester ./tester.c 
 
