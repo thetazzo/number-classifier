@@ -176,7 +176,7 @@ void sample_result_load(char * file_path, SampleResult *sr)
     }
     FILE *fp = fopen(file_path, "r");
     if (fp == NULL) {
-        fprintf(stderr, "[ERROR]: %s :: Missing test file `%s`\n", strerror(errno), file_path);
+        fprintf(stderr, "[ERROR]: %s :: Missing test record `%s`\n", strerror(errno), file_path);
         exit(EXIT_FAILURE);
     }
 
