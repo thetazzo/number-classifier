@@ -371,8 +371,8 @@ void print_usage(const char *program)
     printf("SUBCOMMANDS:\n");
     printf("    help ................................ print usage\n");
     printf("    clean ............................... deletes compiled tests\n");
-    printf("    record <?flag> <?file_path>.......... uecord output of tests\n");
     printf("    run <?flag> <?file_path> ............ runs all tests\n");
+    printf("    record <?flag> <?file_path> ......... record output of tests\n");
     printf("FLAGS:\n");
     printf("    -s .................................. don't print logs\n");
 }
