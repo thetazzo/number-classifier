@@ -33,6 +33,10 @@ float rand_float(void);
 // ====================================================================
 //                          Activation Functions
 // ====================================================================
+
+// TODO: Activation Structure
+// TODO: let the activation structure hold .range_min, .range_max which specifies 
+//       the randomization range
 typedef enum {
     NF_ACT_SIG,
     NF_ACT_RELU,
