@@ -2,6 +2,7 @@ mat_alloc
 mat_copy
 mat_fill
 mat_dot
+mat_print
 mat_rand
 mat_sum
 mat_shuffle_rows
