@@ -100,12 +100,10 @@ NF_Mat nf_mat_row(NF_Mat m, size_t row);
 // TODO: write docs
 void nf_mat_copy(NF_Mat dst, NF_Mat src);
 // TODO: write docs
-// TODO: write test
 void nf_mat_dot(NF_Mat dst, NF_Mat a, NF_Mat b);
 // TODO: write docs
 void nf_mat_sum(NF_Mat dst, NF_Mat a);
 // TODO: write docs
-// TODO: write test
 void nf_mat_shuffle_rows(NF_Mat m);
 // TODO: write docs
 // TODO: write test
