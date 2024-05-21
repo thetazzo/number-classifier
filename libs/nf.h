@@ -83,7 +83,6 @@ typedef struct {
 } NF_Mat;
 
 // TODO: write docs
-// TODO: write test
 #define NF_MAT_AT(m, i, j) (m).es[(i)*(m).stride + (j)]
 // Allocate memory for a matrix
 // TODO: write docs

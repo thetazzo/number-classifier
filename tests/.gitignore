@@ -1,4 +1,5 @@
 mat_alloc
+mat_at
 mat_copy
 mat_fill
 mat_dot
