@@ -428,6 +428,7 @@ void tests_record(SDA tests)
     }
 }
 
+// pop an argument for the top of argv
 char *pop_argv(int *argc, char ***argv)
 {
     assert(*argc > 0);
@@ -460,6 +461,15 @@ int main(int argc, char **argv)
     }
 
     const char *subcommand = pop_argv(&argc, &argv);
+
+    // commands that do not rely on tests
+    if (strcmp(subcommand, "clean") == 0) {
+        delete_files_delim(MATCH_CMP_ONLY, "./tests/");
+        return 0;
+    } else if (strcmp(subcommand, "help") == 0) {
+        print_usage(program);
+        return 0;
+    }
 
     // Structure holding all references to tests
     SDA tests = {0};
@@ -494,7 +504,7 @@ int main(int argc, char **argv)
         }
     }
 
-    if (strcmp(subcommand, "clean") != 0 && tests.count == 0) {
+    if (tests.count == 0) {
         // Import all test from testing folder when no single test was provided
         tests_import("./tests/", &tests);
     }
@@ -506,10 +516,6 @@ int main(int argc, char **argv)
         }
     } else if (strcmp(subcommand, "record") == 0) {
         tests_record(tests);
-    } else if (strcmp(subcommand, "clean") == 0) {
-        delete_files_delim(MATCH_CMP_ONLY, "./tests/");
-    } else if (strcmp(subcommand, "help") == 0) {
-        print_usage(program);
     } else {
         fprintf(stderr, "ERROR: unknown subcommand `%s`\n", subcommand);
         print_usage(program);
