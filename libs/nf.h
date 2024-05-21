@@ -78,19 +78,40 @@ typedef struct {
     float  *es;
 } NF_Mat;
 
+// TODO: write docs
+// TODO: write test
 #define NF_MAT_AT(m, i, j) (m).es[(i)*(m).stride + (j)]
 // Allocate memory for a matrix
+// TODO: write docs
 NF_Mat nf_mat_alloc(Region *r, size_t rows, size_t cols);
+// TODO: write docs
+// TODO: write test
 void nf_mat_save(FILE *out, NF_Mat m);
+// TODO: write docs
+// TODO: write test
 NF_Mat nf_mat_load(Region *r, FILE *in);
+// TODO: write docs
 void nf_mat_rand(NF_Mat m, float low, float high);
+// TODO: write docs
 void nf_mat_fill(NF_Mat m, float a);
+// TODO: write docs
+// TODO: write test
 NF_Mat nf_mat_row(NF_Mat m, size_t row);
+// TODO: write docs
 void nf_mat_copy(NF_Mat dst, NF_Mat src);
+// TODO: write docs
+// TODO: write test
 void nf_mat_dot(NF_Mat dst, NF_Mat a, NF_Mat b);
+// TODO: write docs
 void nf_mat_sum(NF_Mat dst, NF_Mat a);
+// TODO: write docs
+// TODO: write test
 void nf_mat_shuffle_rows(NF_Mat m);
+// TODO: write docs
+// TODO: write test
 void nf_mat_print(NF_Mat m, const char *name, size_t padding);
+// TODO: write docs
+// TODO: write test
 #define NF_MAT_PRINT(m)  nf_mat_print((m), #m, 0)
 
 // Handling the activation of the matrix
