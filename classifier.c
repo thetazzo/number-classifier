@@ -166,7 +166,8 @@ int main(int argc, char **argv)
         // Application rendering starts here
         size_t w = GetScreenWidth();
         size_t h = GetScreenHeight();
-        NUI_Rect root = {0, 0, w, h};
+        size_t ypad = h*0.08f;
+        NUI_Rect root = {0, ypad, w, h-2*ypad};
         BeginDrawing();
         ClearBackground(nui_background_color());
         nui_layout_begin(NLO_HORZ, root, 3, 0);

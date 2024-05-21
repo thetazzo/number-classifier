@@ -72,9 +72,8 @@ clang -Wall -Wextra -o ./tester ./tester.c
 * [x] Introduce `tia.h` for loading multiple images into one single data structure 
 * [x] Use `tia.h` for loading all `mnist` training images
 * [x] Use `tia.h` for loading all `mnist` testing images
-* [ ] Enable switching between random testing images for testing
-* [ ] Validate the correctnes of the current training image
-* [ ] Test validation on all testing images and count the amout of correct validations
+* [x] Test validation on all testing images and count the amout of correct validations
+* [x] Add some top and bottom padding to the application window
 
 ---
 
