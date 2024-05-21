@@ -357,7 +357,8 @@ int tests_run(SDA tests)
             test_read_output(test_fp, &exe_stdout);
             if (!silent_) {
                 if (exe_stdout[0] != '\0') {
-                    printf("[stdout] %s", exe_stdout);
+                    printf("[stdout]\n");
+                    printf("%s", exe_stdout);
                 }
             }
             // capture exit code
@@ -411,12 +412,12 @@ void tests_record(SDA tests)
             // execute test
             printf("[EXE] %s\n", test.exe_path);
             FILE *test_fp = popen(test.exe_path, "r");
-
             // read output of executed test
             char *exe_stdout = "";
             test_read_output(test_fp, &exe_stdout);
             if (!silent_) {
-                printf("[stdout] %s\n", exe_stdout);
+                printf("[stdout]\n");
+                printf("%s", exe_stdout);
             }
 
             int exe_status = pclose(test_fp);
