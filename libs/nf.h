@@ -106,10 +106,8 @@ void nf_mat_sum(NF_Mat dst, NF_Mat a);
 // TODO: write docs
 void nf_mat_shuffle_rows(NF_Mat m);
 // TODO: write docs
-// TODO: write test
 void nf_mat_print(NF_Mat m, const char *name, size_t padding);
 // TODO: write docs
-// TODO: write test
 #define NF_MAT_PRINT(m)  nf_mat_print((m), #m, 0)
 
 // Handling the activation of the matrix
