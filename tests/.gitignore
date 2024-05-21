@@ -4,4 +4,5 @@ mat_fill
 mat_dot
 mat_rand
 mat_sum
+mat_shuffle_rows
 
