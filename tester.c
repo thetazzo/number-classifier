@@ -53,6 +53,7 @@ void clean_str_buf(char *b)
     }
 }
 
+// removes the delimiter from the string
 char *str_reduce(char delim, char *str)
 {
     char *buf = "";
@@ -91,7 +92,8 @@ char *str_reduce2(char *delim, char *str)
     return buf;
 }
 
-int str_suffix(const char *str, const char *suf)
+// checks wether the string ends with a specific suffix
+bool str_suffix(const char *str, const char *suf)
 {
     size_t str_len = strlen(str);
     size_t suf_len = strlen(suf);
@@ -104,18 +106,20 @@ int str_suffix(const char *str, const char *suf)
     return i == -1;
 }
 
-int MATCH_CMP_ONLY(const char *v) {
-    int cond1 = str_suffix(v, ".c") == 1 ? 0 : 1;
-    int cond2 = str_suffix(v, ".tstr") == 1 ? 0 : 1;
-    return cond1 == cond2 ? 1 : 0;
-}
-
-int str_prefix(const char *pre, const char *str)
+// checks wether a strings starts with a specific prefix
+bool str_prefix(const char *pre, const char *str)
 {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-int delete_files_delim(int (*f)(const char *delim), char *root_path)
+// returns `true` if the provided string is test executable
+bool MATCH_CMP_ONLY(const char *v) {
+    int cond1 = str_suffix(v, ".c") == 1 ? 0 : 1;
+    int cond2 = str_suffix(v, ".tstr") == 1 ? 0 : 1;
+    return cond1 == cond2;
+}
+
+int delete_files_delim(bool (*f)(const char *delim), char *root_path)
 {
     struct dirent *de;
 
