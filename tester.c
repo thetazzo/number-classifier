@@ -119,7 +119,9 @@ bool MATCH_CMP_ONLY(const char *v) {
     return cond1 == cond2;
 }
 
-int delete_files_delim(bool (*f)(const char *delim), char *root_path)
+// delete files with file names that return `true` when passed through the `delim_tester` function
+//     -> 0 .... when delition was succeesful
+int delete_files_delim(bool (*delim_tester)(const char *delim), char *root_path)
 {
     struct dirent *de;
 
@@ -133,7 +135,7 @@ int delete_files_delim(bool (*f)(const char *delim), char *root_path)
     while ((de = readdir(fd)) != NULL) {
         char *file_name = de->d_name;
         if (!str_prefix(".", file_name) && strcmp(file_name, ".") && strcmp(file_name, "..")) {
-            if (f(file_name) == 1) {
+            if (delim_tester(file_name) == 1) {
                 char delete_fp[256];
                 snprintf(delete_fp, sizeof(delete_fp), "./tests/%s", file_name);
                 if (!silent_) { 
@@ -153,6 +155,7 @@ typedef enum {
     EXE_FAIL,
 } SampleType;
 
+// convert sample type into its string name
 char *sample_type_name(SampleType t)
 {
     switch (t) {
@@ -173,6 +176,7 @@ typedef struct {
     char *stdout_;
 } SampleResult;
 
+// load test result from file into SampleResult structure
 void sample_result_load(char * file_path, SampleResult *sr)
 {
     if (!silent_) {
@@ -265,6 +269,7 @@ bool sample_result_verify(char *stdout_, int exitcode_, SampleResult sr)
     return true;
 }
 
+// print all sample fields onto stdout
 void sample_dump(Sample s)
 {
     printf("cmp_path: %s, exe_path: %s, type: %s\n", s.cmp_path, s.exe_path, sample_type_name(s.type)); 
@@ -276,6 +281,7 @@ typedef struct {
     Sample *items;
 } SDA;
 
+// read stdout from file into `dst` string ptr
 void test_read_output(FILE *test_fp, char **dst)
 {
     char line[256];
@@ -284,7 +290,7 @@ void test_read_output(FILE *test_fp, char **dst)
     }
 }
 
-
+// load all tests in the provided directory into the SDA structure pointer (aka. tests structure)
 void tests_import(char *dir_path, SDA *tests)
 {
     struct dirent *de;
@@ -328,6 +334,9 @@ void tests_import(char *dir_path, SDA *tests)
     closedir(fd);
 }
 
+// execute all tests from the provided SDA structure (aka. tests structure)
+//     -> 1 ... when any compilation or execution fails 
+//     -> 0 ... when all tests pass
 int tests_run(SDA tests)
 {
     size_t cmp_fail_count = 0;
@@ -385,6 +394,8 @@ int tests_run(SDA tests)
     return cmp_fail_count > 0 || exe_fail_count > 0;
 }
 
+// Record exected outputs of tests provided in SDA structure (aka. tests structure)
+//     - Creates `<test_name>.tstr` files for each test in SDA
 void tests_record(SDA tests)
 {
     // assume that all samples here are of type tests
@@ -442,6 +453,7 @@ char *pop_argv(int *argc, char ***argv)
     return result;
 }
 
+// print usage of the program
 void print_usage(const char *program)
 {
     printf("Usage: %s <subcommand>\n", program);
