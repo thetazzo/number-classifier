@@ -29,29 +29,8 @@ bool silent_ = false;
             assert((da)->items != NULL && "Buy more RAM");                                  \
         }                                                                                   \
         (da)->items[(da)->count++] = (item);                                                \
-    } while (0)                                                                           
+    } while (0)
 #endif // da_append
-
-// @depricated
-int is_cmp_file(char *fn)
-{
-    for (size_t i = 0; i < strlen(fn); ++i) {
-        char c = fn[i];
-        if (c == '.') {
-            if (fn[i+1] == 'c') {
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
-
-void clean_str_buf(char *b)
-{
-    for (size_t i = 0; i < strlen(b); ++i) {
-        b[i] = 0;
-    }
-}
 
 // removes the delimiter from the string
 char *str_reduce(char delim, char *str)
@@ -129,7 +108,7 @@ int delete_files_delim(bool (*delim_tester)(const char *delim), char *root_path)
 
     if (fd == NULL) {
         fprintf(stderr, "Directory `%s` could not be opened", root_path);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     while ((de = readdir(fd)) != NULL) {
@@ -299,7 +278,7 @@ void tests_import(char *dir_path, SDA *tests)
 
     if (fd == NULL) {
         fprintf(stderr, "Directory `%s` could not be opened", dir_path);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // delete compiled files
@@ -407,7 +386,7 @@ void tests_record(SDA tests)
 
         if (cmp_exitcode != 0) {
             fprintf(stderr, "Compilation failed for `%s`", test.cmp_path);
-            exit(1);
+            exit(EXIT_FAILURE);
         } else {
             // execute test
             printf("[EXE] %s\n", test.exe_path);
@@ -424,7 +403,7 @@ void tests_record(SDA tests)
             int exe_exitcode = exe_status/256;
             if (exe_exitcode != 0) {
                 fprintf(stderr, "[ERROR]: execution failed: `%s`", test.exe_path);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
 
             // construct test output file name
@@ -500,7 +479,7 @@ int main(int argc, char **argv)
             } else {
                 fprintf(stderr, "[ERROR]: unknown subcommand flag `%s`", flag);
                 print_usage(program);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         } else {
             // Handle arguments that are not subcommand flags
@@ -508,7 +487,7 @@ int main(int argc, char **argv)
             FILE *fd = fopen(flag, "r");
             if (fd == NULL) {
                 fprintf(stderr, "[ERROR]: %s: `%s`", strerror(errno), flag);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
             fclose(fd);
             char *exe_path = str_reduce2(".c", flag);
