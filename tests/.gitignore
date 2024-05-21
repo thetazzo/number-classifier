@@ -1,6 +1,7 @@
 mat_alloc
+mat_copy
+mat_fill
+mat_dot
 mat_rand
 mat_sum
-mat_fill
-mat_copy
 
