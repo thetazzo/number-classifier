@@ -5,6 +5,7 @@ mat_fill
 mat_dot
 mat_print
 mat_rand
+mat_row
 mat_sum
 mat_shuffle_rows
 
