@@ -92,16 +92,20 @@ typedef struct {
     float  *es;
 } NF_Mat;
 
+// ====================================================================
 // Gets value inside the matrix
 //     i .... {size_t} row index
 //     j .... {size_t} coloumn index
 //     -> {float} value inside the matrix 
+// ====================================================================
 #define NF_MAT_AT(m, i, j) (m).es[(i)*(m).stride + (j)]
+// ====================================================================
 // Reserve memory that stores the matrix structure
 //     r    .... {NF_Region} region where the matrix will be stored at
 //     rows .... {size_t} amount of rows of the matrix
 //     cols .... {size_t} amount of cols of the matrix
 //     -> {NF_Mat} matrix that was created
+// ====================================================================
 NF_Mat nf_mat_alloc(NF_Region *r, size_t rows, size_t cols);
 // TODO: write docs
 // TODO: write test
@@ -109,45 +113,63 @@ void nf_mat_save(FILE *out, NF_Mat m);
 // TODO: write docs
 // TODO: write test
 NF_Mat nf_mat_load(NF_Region *r, FILE *in);
+// ====================================================================
 // Randomize all value in the matrix
 //     m    .... {NF_Mat} matrix to randomize
 //     low  .... {float} lower bound of randomiztaion
 //     high .... {float} upper bound of randomiztaion
+// ====================================================================
 void nf_mat_rand(NF_Mat m, float low, float high);
+// ====================================================================
 // Populate the matrix with a specific value
 //     m .... {NF_Mat} matrix to be filled haha
 //     a .... {NF_Mat} value that will fill the matrix
+// ====================================================================
 void nf_mat_fill(NF_Mat m, float a);
-// Extract the specific row of the matrix and return it as it's own 1xcols matrix
+// ====================================================================
+// Extract the specific row of the matrix 
 //     m   .... {NF_Mat} matrix holding the row
 //     row .... {size_t} 0 based index of the row
 //     -> {NF_Mat} 1xcols matrix representation of the row
+// ====================================================================
 NF_Mat nf_mat_row(NF_Mat m, size_t row);
+// ====================================================================
 // Copy all values from one matrix into another
 //     dst .... {NF_Mat} the destination of copied values
 //     src .... {NF_Mat} the source of copied values
+// ====================================================================
 void nf_mat_copy(NF_Mat dst, NF_Mat src);
+// ====================================================================
 // Perform the dot operation on two matrices
 //     dst .... {NF_Mat} matrix holding the  result of the operation
 //     a   .... {NF_Mat} first matrix
 //     b   .... {NF_Mat} second matrix
+// ====================================================================
 void nf_mat_dot(NF_Mat dst, NF_Mat a, NF_Mat b);
+// ====================================================================
 // Performs the sum operation on two matrices
 //     - all values of one matrix are added to the output matrix
 //     dst .... {NF_Mat} the matrix into which the values are summed
 //     a   .... {NF_Mat} matrix with values to add
+// ====================================================================
 void nf_mat_sum(NF_Mat dst, NF_Mat a);
+// ====================================================================
 // Place rows of the provided matrix in a random order
 //     - uses rand.h for randomization
 //     - setting srand will probably help look `man rand`
 //     m .... {NF_Mat} matrix of which rows will be shuffled
+// ====================================================================
 void nf_mat_shuffle_rows(NF_Mat m);
+// ====================================================================
 // Print the whole matrix and it's name
 //     m       .... {NF_Mat} matrix to be printed
 //     name    .... {const char*} the name of the matrix
-//     padding .... {size_t} the amount of left padding to be applied during printing
+//     padding .... {size_t} the amount of left padding applied when printing
+// ====================================================================
 void nf_mat_print(NF_Mat m, const char *name, size_t padding);
+// ====================================================================
 // Macro for default style of matrix printing
+// ====================================================================
 #define NF_MAT_PRINT(m)  nf_mat_print((m), #m, 0)
 
 // Handling the activation of the matrix
