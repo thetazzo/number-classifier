@@ -118,8 +118,10 @@ void nf_mat_rand(NF_Mat m, float low, float high);
 //     m .... {NF_Mat} matrix to be filled haha
 //     a .... {NF_Mat} value that will fill the matrix
 void nf_mat_fill(NF_Mat m, float a);
-// TODO: write docs
-// TODO: write test
+// Extract the specific row of the matrix and return it as it's own 1xcols matrix
+//     m   .... {NF_Mat} matrix holding the row
+//     row .... {size_t} 0 based index of the row
+//     -> {NF_Mat} 1xcols matrix representation of the row
 NF_Mat nf_mat_row(NF_Mat m, size_t row);
 // Copy all values from one matrix into another
 //     dst .... {NF_Mat} the destination of copied values
