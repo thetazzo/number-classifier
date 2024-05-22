@@ -33,10 +33,6 @@ float rand_float(void);
 // ====================================================================
 //                          Activation Functions
 // ====================================================================
-
-// TODO: Activation Structure
-// TODO: let the activation structure hold .range_min, .range_max which specifies 
-//       the randomization range
 typedef enum {
     NF_ACT_SIG,
     NF_ACT_RELU,
@@ -50,10 +46,20 @@ char *nf_activation_as_str(void);
 // Normalization function name represented as a string
 char *nf_normf_as_str(void);
 
+// TODO: docs
+// TODO: test
 float nf_sigmoidf(float x);
+// TODO: docs
+// TODO: test
 float nf_reluf(float x);
+// TODO: docs
+// TODO: test
 float nf_lreluf(float x);
+// TODO: docs
+// TODO: test
 float nf_tanhf(float x);
+// TODO: docs
+// TODO: test
 float nf_gelu(float x);
 
 // ====================================================================
@@ -63,14 +69,18 @@ typedef struct {
     size_t capacity_;
     size_t size_;
     uintptr_t *words;
-} Region;
+} NF_Region;
 
+// Prepares a memory region that can be used for allocation
 // capacity is in bytes but it can allocate more just to keep words(data) alligned
-Region region_alloc_alloc(size_t capacity);
-void *region_alloc(Region *r, size_t size);
-// TODO: reset -> release
-#define region_reset(r) if (r) (r)->size_ = 0
-#define region_occupied_bytes(r) (NF_ASSERT((r) != NULL) , (r)->size_*sizeof(*(r)->words))
+NF_Region nf_region_alloc_alloc(size_t capacity);
+
+// Allocates a memory region of a specific size
+void *nf_region_alloc(NF_Region *r, size_t size);
+
+// Frees up the region aka. sets everything to 0
+#define nf_region_reset(r) if (r) (r)->size_ = 0
+#define nf_region_occupied_bytes(r) (NF_ASSERT((r) != NULL) , (r)->size_*sizeof(*(r)->words))
 
 // ====================================================================
 //                 Declatrations For Matrix Operations
@@ -82,38 +92,65 @@ typedef struct {
     float  *es;
 } NF_Mat;
 
-// TODO: write docs
+// Gets value inside the matrix
+//     i .... {size_t} row index
+//     j .... {size_t} coloumn index
+//     -> {float} value inside the matrix 
 #define NF_MAT_AT(m, i, j) (m).es[(i)*(m).stride + (j)]
-// Allocate memory for a matrix
-// TODO: write docs
-NF_Mat nf_mat_alloc(Region *r, size_t rows, size_t cols);
+// Reserve memory that stores the matrix structure
+//     r    .... {NF_Region} region where the matrix will be stored at
+//     rows .... {size_t} amount of rows of the matrix
+//     cols .... {size_t} amount of cols of the matrix
+//     -> {NF_Mat} matrix that was created
+NF_Mat nf_mat_alloc(NF_Region *r, size_t rows, size_t cols);
 // TODO: write docs
 // TODO: write test
 void nf_mat_save(FILE *out, NF_Mat m);
 // TODO: write docs
 // TODO: write test
-NF_Mat nf_mat_load(Region *r, FILE *in);
-// TODO: write docs
+NF_Mat nf_mat_load(NF_Region *r, FILE *in);
+// Randomize all value in the matrix
+//     m    .... {NF_Mat} matrix to randomize
+//     low  .... {float} lower bound of randomiztaion
+//     high .... {float} upper bound of randomiztaion
 void nf_mat_rand(NF_Mat m, float low, float high);
-// TODO: write docs
+// Populate the matrix with a specific value
+//     m .... {NF_Mat} matrix to be filled haha
+//     a .... {NF_Mat} value that will fill the matrix
 void nf_mat_fill(NF_Mat m, float a);
 // TODO: write docs
 // TODO: write test
 NF_Mat nf_mat_row(NF_Mat m, size_t row);
-// TODO: write docs
+// Copy all values from one matrix into another
+//     dst .... {NF_Mat} the destination of copied values
+//     src .... {NF_Mat} the source of copied values
 void nf_mat_copy(NF_Mat dst, NF_Mat src);
-// TODO: write docs
+// Perform the dot operation on two matrices
+//     dst .... {NF_Mat} matrix holding the  result of the operation
+//     a   .... {NF_Mat} first matrix
+//     b   .... {NF_Mat} second matrix
 void nf_mat_dot(NF_Mat dst, NF_Mat a, NF_Mat b);
-// TODO: write docs
+// Performs the sum operation on two matrices
+//     - all values of one matrix are added to the output matrix
+//     dst .... {NF_Mat} the matrix into which the values are summed
+//     a   .... {NF_Mat} matrix with values to add
 void nf_mat_sum(NF_Mat dst, NF_Mat a);
-// TODO: write docs
+// Place rows of the provided matrix in a random order
+//     - uses rand.h for randomization
+//     - setting srand will probably help look `man rand`
+//     m .... {NF_Mat} matrix of which rows will be shuffled
 void nf_mat_shuffle_rows(NF_Mat m);
-// TODO: write docs
+// Print the whole matrix and it's name
+//     m       .... {NF_Mat} matrix to be printed
+//     name    .... {const char*} the name of the matrix
+//     padding .... {size_t} the amount of left padding to be applied during printing
 void nf_mat_print(NF_Mat m, const char *name, size_t padding);
-// TODO: write docs
+// Macro for default style of matrix printing
 #define NF_MAT_PRINT(m)  nf_mat_print((m), #m, 0)
 
 // Handling the activation of the matrix
+// TODO: docs
+// TODO: test
 void nf_mat_act(NF_Mat m);
 
 // ====================================================================
@@ -137,6 +174,8 @@ typedef enum {
 // Normalize the output column of the matrix using SOFTMAX function
 //     - transforms the output of the matrix into a probability destribution
 // ====================================================================
+// TODO: docs
+// TODO: test
 void nf_softmax(NF_Mat m);
 
 // ====================================================================
@@ -156,15 +195,15 @@ typedef struct {
 #define NF_NN_INPUT(nn) (NF_ASSERT((nn).arch_count > 0), (nn).as[0])
 #define NF_NN_OUTPUT(nn) (NF_ASSERT((nn).arch_count > 0), (nn).as[(nn).arch_count-1])
 
-NF_NN nf_nn_alloc(Region *r, size_t *arch, size_t arch_count);
+NF_NN nf_nn_alloc(NF_Region *r, size_t *arch, size_t arch_count);
 void nf_nn_fill(NF_NN nn, float a);
 void nf_nn_print(NF_NN nn, const char *name);
 #define NF_NN_PRINT(nn) nf_nn_print((nn), #nn) 
 void nf_nn_rand(NF_NN nn, float low, float high);
 void nf_nn_forward(NF_NN nn);
 float nf_nn_cost(NF_NN nn, NF_Mat ti, NF_Mat to);
-NF_NN nf_nn_finite_diff(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to, float eps);
-NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to);
+NF_NN nf_nn_finite_diff(NF_Region *r, NF_NN nn, NF_Mat ti, NF_Mat to, float eps);
+NF_NN nf_nn_backprop(NF_Region *r, NF_NN nn, NF_Mat ti, NF_Mat to);
 void nf_nn_learn(NF_NN nn, NF_NN gn, float rate);
 
 typedef struct {
@@ -173,7 +212,7 @@ typedef struct {
     bool done;
 } Batch;
 
-void nf_batch_process(Region *r, Batch *b, size_t batch_size, NF_NN nn, NF_Mat td, float rate);
+void nf_batch_process(NF_Region *r, Batch *b, size_t batch_size, NF_NN nn, NF_Mat td, float rate);
 
 #ifdef NF_IMAGE_GENERATION
 #include "stb_image.h"
@@ -292,13 +331,13 @@ void nf_softmax(NF_Mat m)
  * -------------------------------------
  */
 
-NF_Mat nf_mat_alloc(Region *r, size_t rows, size_t cols)
+NF_Mat nf_mat_alloc(NF_Region *r, size_t rows, size_t cols)
 {
     NF_Mat m = {0}; 
     m.rows = rows;
     m.cols = cols;
     m.stride = cols;
-    m.es = region_alloc(r, sizeof(*m.es) * rows * cols);
+    m.es = nf_region_alloc(r, sizeof(*m.es) * rows * cols);
     NF_ASSERT(m.es != NULL);
     return m;
 }
@@ -318,7 +357,7 @@ void nf_mat_save(FILE *out, NF_Mat m)
     }
 }
 
-NF_Mat nf_mat_load(Region *r, FILE *in)
+NF_Mat nf_mat_load(NF_Region *r, FILE *in)
 {
     uint64_t magic;
     fread(&magic, sizeof(magic), 1, in);
@@ -465,7 +504,7 @@ void nf_mat_act(NF_Mat m)
 //              Neural Network Implementations 
 // ------------------------------------------------
 
-NF_NN nf_nn_alloc(Region *r, size_t *arch, size_t arch_count)
+NF_NN nf_nn_alloc(NF_Region *r, size_t *arch, size_t arch_count)
 {
     NF_ASSERT(arch_count > 0);
 
@@ -473,11 +512,11 @@ NF_NN nf_nn_alloc(Region *r, size_t *arch, size_t arch_count)
     nn.arch = arch;
     nn.arch_count = arch_count;
 
-    nn.ws = region_alloc(r, sizeof(*nn.ws)*nn.arch_count - 1);
+    nn.ws = nf_region_alloc(r, sizeof(*nn.ws)*nn.arch_count - 1);
     NF_ASSERT(nn.ws != NULL);
-    nn.bs = region_alloc(r, sizeof(*nn.bs)*nn.arch_count - 1);
+    nn.bs = nf_region_alloc(r, sizeof(*nn.bs)*nn.arch_count - 1);
     NF_ASSERT(nn.bs != NULL);
-    nn.as = region_alloc(r, sizeof(*nn.as)*(nn.arch_count));
+    nn.as = nf_region_alloc(r, sizeof(*nn.as)*(nn.arch_count));
     NF_ASSERT(nn.as != NULL);
 
     nn.as[0] = nf_mat_alloc(r, 1, arch[0]);
@@ -569,7 +608,7 @@ float nf_nn_cost(NF_NN nn, NF_Mat ti, NF_Mat to)
     return c/n;
 }
 
-NF_NN nf_nn_finite_diff(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to, float eps)
+NF_NN nf_nn_finite_diff(NF_Region *r, NF_NN nn, NF_Mat ti, NF_Mat to, float eps)
 {
     float saved;
     float c = nf_nn_cost(nn, ti, to);
@@ -597,7 +636,7 @@ NF_NN nf_nn_finite_diff(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to, float eps)
     return gn;
 }
 
-NF_NN nf_nn_backprop(Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
+NF_NN nf_nn_backprop(NF_Region *r, NF_NN nn, NF_Mat ti, NF_Mat to)
 {
     NF_ASSERT(ti.rows == to.rows);
     size_t n = ti.rows;
@@ -713,7 +752,7 @@ void nf_nn_learn(NF_NN nn, NF_NN gn, float rate)
     }
 }
 
-void nf_batch_process(Region *r, Batch *b, size_t batch_size, NF_NN nn, NF_Mat td, float rate)
+void nf_batch_process(NF_Region *r, Batch *b, size_t batch_size, NF_NN nn, NF_Mat td, float rate)
 {
     if (b->done) {
         b->done = false;
@@ -879,9 +918,9 @@ int nf_v_render_upscaled_video(NF_NN nn, float duration, const char *out_file_pa
 }
 #endif // NF_IMAGE_GENERATION
 
-Region region_alloc_alloc(size_t capacity)
+NF_Region nf_region_alloc_alloc(size_t capacity)
 {
-    Region r = {0};
+    NF_Region r = {0};
     size_t word_size = sizeof(*r.words);
     size_t words_capacity = (capacity + word_size - 1)/word_size;
     void *words = NF_MALLOC(words_capacity*word_size);
@@ -891,7 +930,7 @@ Region region_alloc_alloc(size_t capacity)
     return r;
 }
 
-void *region_alloc(Region *r, size_t size)
+void *nf_region_alloc(NF_Region *r, size_t size)
 {
     if (r == NULL) {
         return NF_MALLOC(size);
