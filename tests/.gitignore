@@ -12,3 +12,4 @@ mat_act_lrelu
 mat_act_relu
 mat_act_sig
 mat_act_tanh
+mat_softmax

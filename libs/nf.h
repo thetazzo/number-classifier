@@ -47,16 +47,12 @@ char *nf_activation_as_str(void);
 char *nf_normf_as_str(void);
 
 // TODO: docs
-// TODO: test
 float nf_sigmoidf(float x);
 // TODO: docs
-// TODO: test
 float nf_reluf(float x);
 // TODO: docs
-// TODO: test
 float nf_lreluf(float x);
 // TODO: docs
-// TODO: test
 float nf_tanhf(float x);
 // TODO: docs
 // TODO: test
@@ -200,7 +196,7 @@ typedef enum {
 // ====================================================================
 // TODO: docs
 // TODO: test
-void nf_softmax(NF_Mat m);
+void nf_mat_softmax(NF_Mat m);
 
 // ====================================================================
 //                     Neural Network Declarations 
@@ -283,13 +279,11 @@ char *nf_activation_as_str(void)
     }
 }
 
-// TODO: docs
 float nf_sigmoidf(float x)
 {
     return 1.f / (1.f + expf(-x));
 }
 
-// TODO: docs
 float nf_reluf(float x)
 {
     if (x > 0) {
@@ -298,7 +292,6 @@ float nf_reluf(float x)
     return 0;
 }
 
-// TODO: docs
 float nf_lreluf(float x)
 {
     if (x < 0) {
@@ -307,15 +300,13 @@ float nf_lreluf(float x)
     return x;
 }
 
-// TODO: docs
 float nf_tanhf(float x)
 {
+    float ex = expf(x);
     float enx = expf(-x);
     return (ex - enx) / (ex + enx);
 }
 
-// TODO: docs
-// TODO: test
 float nf_gelu(float x)
 {
     (void)x;
@@ -340,7 +331,7 @@ char *nf_normf_as_str(void)
 #endif
 }
 
-void nf_softmax(NF_Mat m)
+void nf_mat_softmax(NF_Mat m)
 {
     float exps = 0.f; // sum of the output column
     // Calculate the sum of the output column
@@ -608,7 +599,7 @@ void nf_nn_forward(NF_NN nn)
 #ifdef NF_NN_NORMF
         switch (NF_NN_NORMF) {
             case NF_NORMF_SOFTMAX:
-                nf_softmax(nn.as[nn.arch_count-1]);
+                nf_mat_softmax(nn.as[nn.arch_count-1]);
                 break;
             default:
                 NF_ASSERT(0 && "unreachable");
