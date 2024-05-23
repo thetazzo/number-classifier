@@ -263,6 +263,8 @@ float rand_float(void)
 //            Activation Functions
 // ==========================================
 
+// TODO: docs
+// TODO: test
 char *nf_activation_as_str(void)
 {
     switch (NF_NN_ACT) {
@@ -281,11 +283,13 @@ char *nf_activation_as_str(void)
     }
 }
 
+// TODO: docs
 float nf_sigmoidf(float x)
 {
     return 1.f / (1.f + expf(-x));
 }
 
+// TODO: docs
 float nf_reluf(float x)
 {
     if (x > 0) {
@@ -294,6 +298,7 @@ float nf_reluf(float x)
     return 0;
 }
 
+// TODO: docs
 float nf_lreluf(float x)
 {
     if (x < 0) {
@@ -302,13 +307,15 @@ float nf_lreluf(float x)
     return x;
 }
 
+// TODO: docs
 float nf_tanhf(float x)
 {
-    float ex = expf(x);
     float enx = expf(-x);
     return (ex - enx) / (ex + enx);
 }
 
+// TODO: docs
+// TODO: test
 float nf_gelu(float x)
 {
     (void)x;

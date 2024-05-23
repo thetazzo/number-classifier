@@ -8,4 +8,7 @@ mat_rand
 mat_row
 mat_sum
 mat_shuffle_rows
-
+mat_act_lrelu
+mat_act_relu
+mat_act_sig
+mat_act_tanh
