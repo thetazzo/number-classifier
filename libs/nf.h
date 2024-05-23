@@ -191,11 +191,6 @@ typedef enum {
 } NF_Normf;
 
 // ====================================================================
-// Normalize the output column of the matrix using SOFTMAX function
-//     - transforms the output of the matrix into a probability destribution
-// ====================================================================
-
-// ====================================================================
 // Convert a vector of K numbers into a probability destribution
 // NOTE: In the context of the library a vector is matrix with only one row
 // Maps any real number to an interval between 0 and 1 
