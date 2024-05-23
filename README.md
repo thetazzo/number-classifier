@@ -7,10 +7,9 @@
 ## Short description
 
 * This application trains a neural network on **mnist** database of handwritten digits and produces a neural network model than can classify which digit appears on the given image
-
-<p align="center">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/9DMgQf42sH8?si=sWk34V_T9-leWPJ-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</p>
+* Video reference:
+    * A video showing the training of a model on 15005 images
+[![Watch the video](https://i3.ytimg.com/vi/9DMgQf42sH8/maxresdefault.jpg)](https://www.youtube.com/embed/9DMgQf42sH8?si=sWk34V_T9-leWPJ-)
 
 --- 
 
