@@ -22,6 +22,13 @@
 
 ## Build And Usage
 
+* **NOTE**
+    * In the source file `classifier.c` a `TIA_SKIP` macro is defined which dictates the modulo number when importing images
+    * Sometimes while testing we don't need to run the program on all 60000 images
+    * Example: `TIA_SKIP 12` means that only every 12th image will be added
+    * NOTE: the default value of `TIA_SKIP` is `12`
+    * NOTE: to import all images set `TIA_SKIP 1`
+
 * The project can be built using the provided *build.sh* script
 ```bash
 ./build.sh
