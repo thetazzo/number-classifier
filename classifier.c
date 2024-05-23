@@ -41,7 +41,7 @@ float rate = 0.02f; // neural network learning rate
 
 int main(int argc, char **argv)
 {
-    Region temp = region_alloc_alloc(1024*1014*256);
+    NF_Region temp = nf_region_alloc_alloc(1024*1014*256);
     char *program = pop_argv(&argc, &argv);
 
     if (argc == 0) {
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
         nui_render_nn(nn, nui_layout_slot());
         nui_layout_end();
         EndDrawing();
-        region_reset(&temp);
+        nf_region_reset(&temp);
     }
 
     CloseWindow();
